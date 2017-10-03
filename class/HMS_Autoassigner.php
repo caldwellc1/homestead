@@ -14,8 +14,8 @@ class HMS_Autoassigner
         $term = Term::get_selected_term();
 
         // In both cases: Random, and include Banner info
-        $f_rooms = HMS_Room::get_all_free_rooms($term, FEMALE, TRUE);
-        $m_rooms = HMS_Room::get_all_free_rooms($term, MALE,   TRUE);
+        $f_rooms = Room::get_all_free_rooms($term, FEMALE, TRUE);
+        $m_rooms = Room::get_all_free_rooms($term, MALE,   TRUE);
         $roommates = HMS_Roommate::get_all_confirmed_roommates($term, TRUE);
         $applicants = HousingApplication::getAllFreshmenApplications($term, 'gender', 'hms_fall_application.lifestyle_option', 'hms_fall_application.preferred_bedtime', 'hms_fall_application.room_condition', 'random');
 
@@ -106,7 +106,7 @@ class HMS_Autoassigner
             }
 
             // Prepare for assignment
-            $room = new HMS_Room($room);
+            $room = new Room($room);
             $room->loadBeds();
 
             $bed_a_text = $room->_beds[0]->get_banner_building_code() . ' ' . $room->_beds[0]->banner_id;
@@ -208,7 +208,7 @@ class HMS_Autoassigner
             }
 
             // Prepare for assignment
-            $room = new HMS_Room($room);
+            $room = new Room($room);
             $room->loadBeds();
 
             $bed_a_text = $room->_beds[0]->get_banner_building_code() . ' ' . $room->_beds[0]->banner_id;
