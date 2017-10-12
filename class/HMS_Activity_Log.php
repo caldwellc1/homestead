@@ -6,7 +6,7 @@ use \Homestead\Exception\DatabaseException;
 use \Homestead\Exception\StudentNotFoundException;
 
 /**
- * The HMS_Acivity_Log class
+ * The HMS_Activity_Log class
  * Handles logging of various activities and produces the log pager.
  *
  * @author Jeremy Booker <jbooker at tux dot appstate dot edu>
@@ -20,7 +20,7 @@ class HMS_Activity_Log{
     public $activity;
     public $actor;
     public $notes;
-
+    public $banner_id;
     public $activity_text;
 
     /**
@@ -69,11 +69,30 @@ class HMS_Activity_Log{
 
         $result = $db->insert();
 
-        if(\PHPWS_Error::logIfError($result)){
-            throw new DatabaseException($result->toString());
-        }else{
-            return TRUE;
+        return TRUE;
+    }
+
+    public function newSave(){
+        //now to save
+        //$activity_log = new HMS_Activity_Log(NULL, $userid, time(), $activity, $actor, $notes, $banner);
+        //$activity_log->save();
+        if($this->id != 0) {
+            return FALSE;
         }
+        if(UserStatus::isMasquerading()) {
+            $this->notes .= " Admin: " . UserStatus::getUsername(FALSE); // get the *real* username
+        }
+        //have to change $activity to the numerical value
+        $activityNum = getActivityNumber($this->get_activity);
+
+        $db = PdoFactory::getPdoInstance();
+        $sql = "INSERT INTO hms_activity_log(user_id, timestamp, activity, actor, notes, banner_id)
+            VALUES (:user, :times, :activity, :actor, :notes, :banner)";
+        $sth = $db->prepare($sql);
+        $sth->execute(array('user' => $this->get_user_id(), 'times' => $this->get_timestamp(),
+        'activity' => $activityNum, 'actor' => $this->get_actor(), 'notes' => $this->get_notes(), 'banner' => $this->get_banner_id()));
+
+        return TRUE;
     }
 
     /**
