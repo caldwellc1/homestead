@@ -45,7 +45,8 @@ class AcceptDeclineRlcInviteCommand extends Command {
             \NQ::simple('hms', NotificationView::SUCCESS, 'You have <strong>accepted</strong> your Residential Learning Community invitation.');
 
             // Log this!
-            HMS_Activity_Log::log_activity($student->getUsername(), ACTIVITY_ACCEPT_RLC_INVITE, UserStatus::getUsername(), $rlcAssignment->getRlcName());
+            $activityLog = new HMS_Activity_Log($student->getUsername(), time(), ACTIVITY_ACCEPT_RLC_INVITE, UserStatus::getUsername(), $rlcAssignment->getRlcName(), $student->get_banner_id);
+            $activityLog->save();
 
             $successCmd = CommandFactory::getCommand('ShowStudentMenu');
             $successCmd->redirect();
@@ -56,7 +57,8 @@ class AcceptDeclineRlcInviteCommand extends Command {
             \NQ::simple('hms', NotificationView::SUCCESS, 'You have <strong>declined</strong> your Residential Learning Community invitation.');
 
             // Log this!
-            HMS_Activity_Log::log_activity($student->getUsername(), ACTIVITY_DECLINE_RLC_INVITE, UserStatus::getUsername(), $rlcAssignment->getRlcName());
+            $activityLog = new HMS_Activity_Log($student->getUsername(), time(), ACTIVITY_DECLINE_RLC_INVITE, UserStatus::getUsername(), $rlcAssignment->getRlcName(), $student->get_banner_id);
+            $activityLog->save();
 
             $successCmd = CommandFactory::getCommand('ShowStudentMenu');
             $successCmd->redirect();

@@ -80,7 +80,8 @@ class LotteryProcess {
 
     public function sendInvites()
     {
-        HMS_Activity_Log::log_activity('hms', ACTIVITY_LOTTERY_EXECUTED, 'hms');
+        $activityLog = new HMS_Activity_Log('hms', time(), ACTIVITY_LOTTERY_EXECUTED, 'hms', NULL, $banner);
+        $activityLog->save();
         $this->output[] = "Lottery system invoked on " . date("d M, Y @ g:i:s", $this->now) . " ($this->now)";
 
         /**
@@ -210,7 +211,8 @@ class LotteryProcess {
         HMS_Email::send_lottery_invite($student, $student->getName(), $this->academicYear);
 
         // Log that the invite was sent
-        HMS_Activity_Log::log_activity($student->getUsername(), ACTIVITY_LOTTERY_INVITED, UserStatus::getUsername(), "Expires on " . date('m/d/Y h:i:s a', $this->expireTime));
+        $activityLog = new HMS_Activity_Log($student->getUsername(), time(), ACTIVITY_LOTTERY_INVITED, UserStatus::getUsername(), "Expires on " . date('m/d/Y h:i:s a', $this->expireTime, $student->getBannerId()));
+        $activityLog->save();
     }
 
     private function sendWinningReminderEmails()
@@ -235,8 +237,8 @@ class LotteryProcess {
 
         foreach ($result as $row) {
             $student = StudentFactory::getStudentByUsername($row['username'], $this->term);
-            HMS_Email::send_lottery_invite_reminder($student, $student->getName(), $this->academicYear);
-            HMS_Activity_Log::log_activity($row['username'], ACTIVITY_LOTTERY_REMINDED, UserStatus::getUsername());
+            $activityLog = new HMS_Activity_Log($row['username'], time(), ACTIVITY_LOTTERY_REMINDED, UserStatus::getUsername(), $banner);
+            $activityLog->save();
         }
     }
 
@@ -262,7 +264,8 @@ class LotteryProcess {
             $bed = new HMS_Bed($row['bed_id']);
             $hall_room = $bed->where_am_i();
             HMS_Email::send_lottery_roommate_reminder($row['asu_username'], $student->getName(), $row['expires_on'], $requestor->getName(), $hall_room, $this->academicYear);
-            HMS_Activity_Log::log_activity($row['asu_username'], ACTIVITY_LOTTERY_ROOMMATE_REMINDED, UserStatus::getUsername());
+            $activityLog = new HMS_Activity_Log($row['asu_username'], time(), ACTIVITY_LOTTERY_ROOMMATE_REMINDED, UserStatus::getUsername(), $banner);
+            $activityLog->save();
         }
     }
 

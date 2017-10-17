@@ -91,13 +91,13 @@ class ActivityLogView extends View {
         if(isset($selection['notes']))
         $form->setValue('notes', $selection['notes']);
 
-        $activities = HMS_Activity_Log::getActivityMapping();
+        /*$activities = HMS_Activity_Log::getActivityMapping();
         foreach($activities as $id => $text) {
             $name = "a$id";
             $form->addCheckbox($name);
             $form->setLabel($name, $text);
             $form->setMatch($name, isset($selection[$name]));
-        }
+        }*/
 
         $form->addSubmit('Refresh');
 

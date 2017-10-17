@@ -244,7 +244,8 @@ class AssignStudentCommand extends Command {
         if($contract === false){
             // No contract exists. Create a new one and send it via email to the student
             if($this->sendContract($student, $housingApplication, $term)){
-                HMS_Activity_Log::log_activity($student->getUsername(), ACTIVITY_CONTRACT_SENT_EMAIL, UserStatus::getUsername(), "Sent new contract via email for $term");
+                $activityLog = new HMS_Activity_Log($student->getUsername(), time(), ACTIVITY_CONTRACT_SENT_EMAIL, UserStatus::getUsername(), "Sent new contract via email for $term", $student->getBannerId());
+                $activityLog->save();
                 \NQ::simple('hms', NotificationView::WARNING, 'No contract found for this semester. A new contract signing request was sent to the student via email.');
             }else{
                 \NQ::simple('hms', NotificationView::ERROR, 'Could not send contract. Student is under 18, but we don\'t know who the parent/guardian is.');
@@ -263,12 +264,13 @@ class AssignStudentCommand extends Command {
                 // Contract is voided. Ignore the current contract and send them another.
                 // Delete the current contract
                 ContractFactory::deleteContract($contract);
-                HMS_Activity_Log::log_activity($student->getUsername(), ACTIVITY_CONTRACT_REMOVED_VOIDED, UserStatus::getUsername(), "Removed student's existing voided contract for $term, so a new contract can be sent.");
-
+                $activityLog = new HMS_Activity_Log($student->getUsername(), time(), ACTIVITY_CONTRACT_REMOVED_VOIDED, UserStatus::getUsername(), "Removed student's existing voided contract for $term, so a new contract can be sent.", $student->getBannerId());
+                $activityLog->save();
                 // Send a new contract
                 $this->sendContract($student, $housingApplication, $term);
                 \NQ::simple('hms', NotificationView::WARNING, 'A voided contract was found for this semester. A new contract signing request was sent to the student via email.');
-                HMS_Activity_Log::log_activity($student->getUsername(), ACTIVITY_CONTRACT_SENT_EMAIL, UserStatus::getUsername(), "Sent new contract via email for $term");
+                $activityLog = new HMS_Activity_Log($student->getUsername(), time(), ACTIVITY_CONTRACT_SENT_EMAIL, UserStatus::getUsername(), "Sent new contract via email for $term", $student->getBannerId());
+                $activityLog->save();
             } else {
                 // Contract exists, but is in some other pending status (sent, delivered). We don't need to do anything, hopefully student will complete the existing contract.
                 \NQ::simple('hms', NotificationView::INFO, 'This student has a pending contract for this semester. A new contract was not needed.');

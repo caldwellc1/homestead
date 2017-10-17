@@ -184,9 +184,11 @@ class Notification {
 
         // Log that this is happening
         if($from == FROM_ADDRESS){
-            HMS_Activity_Log::log_activity(\Current_User::getUsername(), ACTIVITY_ANON_NOTIFICATION_SENT, \Current_User::getUsername());
+            $activityLog = new HMS_Activity_Log(Current_User::getUsername(), time(), ACTIVITY_ANON_NOTIFICATION_SENT, Current_User::getUsername(), NULL, $banner);
+            $activityLog->save();
         }else{
-            HMS_Activity_Log::log_activity(\Current_User::getUsername(), ACTIVITY_NOTIFICATION_SENT, \Current_User::getUsername());
+            $activityLog = new HMS_Activity_Log(Current_User::getUsername(), time(), ACTIVITY_NOTIFICATION_SENT, Current_User::getUsername(), NULL, $banner);
+            $activityLog->save();
         }
 
         if(is_array($_REQUEST['hall'])){
@@ -203,9 +205,11 @@ class Notification {
                     }
                 }
                 if($from == FROM_ADDRESS){
-                    HMS_Activity_Log::log_activity(\Current_User::getUsername(), ACTIVITY_HALL_NOTIFIED_ANONYMOUSLY, \Current_User::getUsername(), $hall->hall_name);
+                    $activityLog = new HMS_Activity_Log(Current_User::getUsername(), time(), ACTIVITY_HALL_NOTIFIED_ANONYMOUSLY, Current_User::getUsername(), $hall->hall_name, $banner);
+                    $activityLog->save();
                 } else {
-                    HMS_Activity_Log::log_activity(\Current_User::getUsername(), ACTIVITY_HALL_NOTIFIED, \Current_User::getUsername(), $hall->hall_name);
+                    $activityLog = new HMS_Activity_Log(Current_User::getUsername(), time(), ACTIVITY_HALL_NOTIFIED, Current_User::getUsername(), $hall->hall_name, $banner);
+                    $activityLog->save();
                 }
             }
         } else {
@@ -221,9 +225,11 @@ class Notification {
                 }
             }
             if($from == FROM_ADDRESS){
-                HMS_Activity_Log::log_activity(\Current_User::getUsername(), ACTIVITY_HALL_NOTIFIED_ANONYMOUSLY, \Current_User::getUsername(), $hall->hall_name);
+                $activityLog = new HMS_Activity_Log(Current_User::getUsername(), time(), ACTIVITY_HALL_NOTIFIED_ANONYMOUSLY, Current_User::getUsername(), $hall->hall_name, $banner);
+                $activityLog->save();
             } else {
-                HMS_Activity_Log::log_activity(\Current_User::getUsername(), ACTIVITY_HALL_NOTIFIED, \Current_User::getUsername(), $hall->hall_name);
+                $activityLog = new HMS_Activity_Log(Current_User::getUsername(), time(), ACTIVITY_HALL_NOTIFIED, Current_User::getUsername(), $hall->hall_name, $banner);
+                $activityLog->save();
             }
         }
 

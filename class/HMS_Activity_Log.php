@@ -27,85 +27,79 @@ class HMS_Activity_Log{
      * Constructor
      *
      */
-    public function __construct($id = 0, $user_id = null, $timestamp = null,
+    public function __construct($user_id = null, $timestamp = null,
     $activity = null, $actor = null, $notes = null)
     {
-        $this->activity_text = HMS_Activity_Log::getActivityMapping();
-
-        if(is_null($id) || $id == 0) {
-            $this->id = 0;
-            $this->set_user_id($user_id);
-            $this->set_timestamp($timestamp);
-            $this->set_activity($activity);
-            $this->set_actor($actor);
-            $this->set_notes($notes);
-        } else {
-            $this->id = $id;
-            $db = new \PHPWS_DB($table);
-            $db->addWhere('id', $this->id);
-            $result = $db->loadObject($this);
-            if(!$result || \PHPWS_Error::logIfError($result)) {
-                $tis->id = 0;
-            }
+        if(!is_null($activity)){
+            $this->activity_text = HMS_Activity_Log::get_text_activity($activity);
         }
+        $this->id = 0;
+        $this->set_user_id($user_id);
+        $this->set_timestamp($timestamp);
+        $this->set_activity($activity);
+        $this->set_actor($actor);
+        $this->set_notes($notes);
     }
 
-    /**
-     * Saves the current activity log object to the db.
-     * Returns TRUE upon succes or a \PEAR error object otherwise.
-     */
-    public function save()
-    {
-        if($this->id != 0) {
-            return FALSE;
-        }
-
-        $db = new \PHPWS_DB('hms_activity_log');
-        $db->addValue('user_id',     $this->get_user_id());
-        $db->addValue('timestamp',   $this->get_timestamp());
-        $db->addValue('activity',    $this->get_activity());
-        $db->addValue('actor',       $this->get_actor());
-        $db->addValue('notes',       $this->get_notes());
-
-        $result = $db->insert();
-
-        return TRUE;
+    public function load($id){
+        //change to banner maybe
+        $db = PdoFactory::getPdoInstance();
+        $sql = "SELECT *
+           FROM hms_activity_log
+           WHERE user_id = :id";
+        $sth = $db->prepare($sql);
+        $sth->execute(array('id' => $this->id));
+        $result = $sth->fetch();
     }
 
-    public function newSave(){
+    public function save(){
         //now to save
-        //$activity_log = new HMS_Activity_Log(NULL, $userid, time(), $activity, $actor, $notes, $banner);
-        //$activity_log->save();
-        if($this->id != 0) {
-            return FALSE;
-        }
+        //$activityLog = new HMS_Activity_Log($userid, time(), $activity, $actor, $notes, $banner);
+        //$activityLog->save();
         if(UserStatus::isMasquerading()) {
             $this->notes .= " Admin: " . UserStatus::getUsername(FALSE); // get the *real* username
         }
-        //have to change $activity to the numerical value
-        $activityNum = getActivityNumber($this->get_activity);
-
         $db = PdoFactory::getPdoInstance();
         $sql = "INSERT INTO hms_activity_log(user_id, timestamp, activity, actor, notes, banner_id)
-            VALUES (:user, :times, :activity, :actor, :notes, :banner)";
+            VALUES (:user, :times, (SELECT id FROM hms_activities WHERE activity = :activity), :actor, :notes, :banner)";
         $sth = $db->prepare($sql);
         $sth->execute(array('user' => $this->get_user_id(), 'times' => $this->get_timestamp(),
-        'activity' => $activityNum, 'actor' => $this->get_actor(), 'notes' => $this->get_notes(), 'banner' => $this->get_banner_id()));
+        'activity' => $this->get_activity(), 'actor' => $this->get_actor(), 'notes' => $this->get_notes(), 'banner' => $this->get_banner_id()));
 
         return TRUE;
     }
 
     /**
-     * Turns an integer activity into text
+     * Returns the activities description
      */
-    public function get_text_activity($num = null)
+    public function get_text_activity_by_action()
     {
-        $activities = HMS_Activity_Log::getActivityMapping();
-        if (!is_null($num)) {
-            return $activities[$num];
-        }
+        $db = PdoFactory::getPdoInstance();
+        $sql = "SELECT description
+           FROM hms_activities
+           WHERE id = :id";
+        $sth = $db->prepare($sql);
+        $sth->execute(array('id' => $this->get_activity()));
+        $result = $sth->fetchColumn();
 
-        return $activities[$this->get_activity()];
+        return $result;
+    }
+    /**
+     * Returns a list of all the possible activities
+     */
+    public static function get_activity_list($unSelect = null){
+        $db = PdoFactory::getPdoInstance();
+        $sql = "SELECT id
+           FROM hms_activities";
+        if (!is_null($unSelect)){
+            $sql .= " WHERE action != :un";
+            $params = array('un' => $unSelect);
+        }
+        $sth = $db->prepare($sql);
+        $sth->execute($params);
+        $result = $sth->fetchAll(\PDO::FETCH_COLUMN);
+
+        return $result;
     }
 
     /**
@@ -146,132 +140,6 @@ class HMS_Activity_Log{
         }
 
         return $tpl;
-    }
-
-    /*******************
-     * Static Functions *
-     *******************/
-
-    /**
-     * Takes a username whos log the record should go in, the activity, the actor, and the notes
-     * and creates a new Activity_Log object and saves it to the db.
-     */
-    public static function log_activity($userid, $activity, $actor, $notes = NULL)
-    {
-        if(UserStatus::isMasquerading()) {
-            $notes .= " Admin: " . UserStatus::getUsername(FALSE); // get the *real* username
-        }
-
-        $activity_log = new HMS_Activity_Log(NULL, $userid, time(), $activity, $actor, $notes);
-        $activity_log->save();
-    }
-
-    /**
-     * Gets the mapping of activity number to activity name.
-     */
-    public static function getActivityMapping()
-    {
-        return array(
-            ACTIVITY_LOGIN                          => "Logged in",
-            ACTIVITY_AGREED_TO_TERMS                => "Agreed to terms & agreement",
-            ACTIVITY_SUBMITTED_APPLICATION          => "Submitted housing application",
-            ACTIVITY_SUBMITTED_RLC_APPLICATION      => "Submitted RLC application",
-            ACTIVITY_ACCEPTED_TO_RLC                => "Accepted to an RLC",
-            ACTIVITY_TOO_OLD_REDIRECTED             => "Over 25, redirected",
-            ACTIVITY_REQUESTED_AS_ROOMMATE          => "Roommate request",
-            ACTIVITY_REJECTED_AS_ROOMMATE           => "Roommate request rejected",
-            ACTIVITY_ACCEPTED_AS_ROOMMATE           => "Roommate request accepted",
-            ACTIVITY_STUDENT_BROKE_ROOMMATE         => "Broke roommate pairing",
-            ACTIVITY_STUDENT_CANCELLED_ROOMMATE_REQUEST => "Cancelled roommate request",
-            ACTIVITY_PROFILE_CREATED                => "Created a profile",
-            ACTIVITY_ASSIGNED                       => "Assigned to room",
-            ACTIVITY_AUTO_ASSIGNED                  => "Auto-assigned to room",
-            ACTIVITY_REMOVED                        => "Removed from room",
-            ACTIVITY_ASSIGNMENT_REPORTED            => "Assignment reported to Banner",
-            ACTIVITY_REMOVAL_REPORTED               => "Removal reported to Banner",
-            ACTIVITY_LETTER_PRINTED                 => "Assignment letter printed",
-            ACTIVITY_BANNER_ERROR                   => "Banner error",
-            ACTIVITY_LOGIN_AS_STUDENT               => "Admin logged in as student",
-            ACTIVITY_ADMIN_ASSIGNED_ROOMMATE        => "Admin assigned roommate",
-            ACTIVITY_ADMIN_REMOVED_ROOMMATE         => "Admin removed roommate",
-            ACTIVITY_AUTO_CANCEL_ROOMMATE_REQ       => "Automatically canceled roommate request",
-            ACTIVITY_WITHDRAWN_APP                  => "Application withdrawn",
-            ACTIVITY_WITHDRAWN_ASSIGNMENT_DELETED   => "Assignment deleted due to withdrawal",
-            ACTIVITY_WITHDRAWN_ROOMMATE_DELETED     => "Roommate request deleted due to withdrawal",
-            ACTIVITY_WITHDRAWN_RLC_APP_DENIED       => "RLC application denied due to withdrawal",
-            ACTIVITY_WITHDRAWN_RLC_ASSIGN_DELETED   => "RLC assignment deleted due to withdrawal",
-            ACTIVITY_APPLICATION_REPORTED           => "Application reported to Banner",
-            ACTIVITY_DENIED_RLC_APPLICATION         => "Denied RLC Application",
-            ACTIVITY_UNDENIED_RLC_APPLICATION       => "Un-denied RLC Application",
-            ACTIVITY_ASSIGN_TO_RLC                  => "Assigned student to RLC",
-            ACTIVITY_RLC_UNASSIGN                   => "Removed from RLC",
-            ACTIVITY_USERNAME_UPDATED               => "Updated Username",
-            ACTIVITY_APPLICATION_UPDATED            => "Updated Application",
-            ACTIVITY_RLC_APPLICATION_UPDATED        => "Updated RLC Application",
-            ACTIVITY_RLC_APPLICATION_DELETED		=> "RLC Application Deleted",
-            ACTIVITY_ASSIGNMENTS_UPDATED            => "Updated Assignments",
-            ACTIVITY_BANNER_QUEUE_UPDATED           => "Updated Banner Queue",
-            ACTIVITY_ROOMMATES_UPDATED              => "Updated Roommates",
-            ACTIVITY_ROOMMATE_REQUESTS_UPDATED      => "Updated Roommate Requests",
-            ACTIVITY_CHANGE_ACTIVE_TERM             => "Changed Active Term",
-            ACTIVITY_ADD_NOTE                       => "Note",
-            ACTIVITY_LOTTERY_SIGNUP_INVITE          => "Invited to enter lottery", //depricated
-            ACTIVITY_LOTTERY_ENTRY                  => "Lottery entry submitted",
-            ACTIVITY_LOTTERY_INVITED                => "Lottery invitation sent",
-            ACTIVITY_LOTTERY_REMINDED               => "Lottery invitation reminder sent",
-            ACTIVITY_LOTTERY_ROOM_CHOSEN            => "Lottery room chosen",
-            ACTIVITY_LOTTERY_REQUESTED_AS_ROOMMATE  => "Requested as a roommate for lottery room",
-            ACTIVITY_LOTTERY_ROOMMATE_REMINDED      => "Lottery roommate invivation reminder sent",
-            ACTIVITY_LOTTERY_CONFIRMED_ROOMMATE     => "Confirmed lottery roommate request",
-            ACTIVITY_LOTTERY_EXECUTED               => "Lottery process executed",
-            ACTIVITY_CREATE_TERM                    => "Created a new Term",
-            ACTIVITY_NOTIFICATION_SENT              => "Notification sent",
-            ACTIVITY_ANON_NOTIFICATION_SENT         => "Anonymous notification sent",
-            ACTIVITY_HALL_NOTIFIED                  => "Email notification sent to hall",
-            ACTIVITY_HALL_NOTIFIED_ANONYMOUSLY      => "Anonymous email notification sent to hall",
-            ACTIVITY_LOTTERY_OPTOUT                 => "Opted-out of waiting list",
-            ACTIVITY_FLOOR_NOTIFIED_ANONYMOUSLY     => "Anonymous email notification sent to floor",
-            ACTIVITY_FLOOR_NOTIFIED                 => "Email notification sent to floor",
-            ACTIVITY_ROOM_CHANGE_SUBMITTED          => "Submitted Room Change Request",
-            ACTIVITY_ROOM_CHANGE_APPROVED_RD        => "RD Approved Room Change",
-            ACTIVITY_ROOM_CHANGE_APPROVED_HOUSING   => "Housing Approved Room Change",
-            ACTIVITY_ROOM_CHANGE_COMPLETED          => "Room Change Completed",
-            ACTIVITY_ROOM_CHANGE_DENIED             => "Room Change Denied",
-            ACTIVITY_ROOM_CHANGE_AGREED             => "Agreed to Room Change Request",
-            ACTIVITY_ROOM_CHANGE_DECLINE            => "Declined Room Change Request",
-            ACTIVITY_LOTTERY_ROOMMATE_DENIED        => "Denied lottery roommate invite",
-            ACTIVITY_CANCEL_HOUSING_APPLICATION     => "Housing Application Cancelled",
-            ACTIVITY_ACCEPT_RLC_INVITE              => "Accepted RLC Invitation",
-            ACTIVITY_DECLINE_RLC_INVITE             => "Declined RLC Invitation",
-            ACTIVITY_RLC_INVITE_SENT                => "RLC Invitation Sent",
-            ACTIVITY_EMERGENCY_CONTACT_UPDATED      => "Emergency Contact & Missing Person information updated",
-            ACTIVITY_CHECK_IN                       => 'Checked-in',
-            ACTIVITY_CHECK_OUT                      => 'Checked-out',
-            ACTIVITY_REAPP_WAITINGLIST_APPLY        => 'Applied for Re-application Waiting List',
-            ACTIVITY_REINSTATE_APPLICATION          => 'Reinstated Application',
-            ACTIVITY_ROOM_CHANGE_REASSIGNED         => 'Reassigned due to Room Change',
-            ACTIVITY_CONTRACT_CREATED               => 'Created a Contract',
-            ACTIVITY_CONTRACT_SENT_EMAIL            => 'Contract Sent via Email',
-            ACTIVITY_CONTRACT_STUDENT_SIGN_EMBEDDED => 'Student Signed Contract via Embedded Signing',
-            ACTIVITY_CONTRACT_REMOVED_VOIDED        => 'Removed Voided Contract',
-            ACTIVITY_MEAL_PLAN_SENT                 => 'Meal Plan Reported to Banner',
-            ACTIVITY_ROOM_DAMAGE_NOTIFICATION       => 'Room damage notification sent'
-        );
-    }
-
-    /**
-     * Returns an array of all the activity ids. Based on the activity mapping above.
-     */
-    public static function get_activity_list()
-    {
-        $activities = HMS_Activity_Log::getActivityMapping();
-        $list = array();
-
-        foreach ($activities as $id=>$desc){
-            $list[] = $id;
-        }
-
-        return $list;
     }
 
     /******************
