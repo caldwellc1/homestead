@@ -47,7 +47,8 @@ class ReinstateApplicationCommand extends Command {
 
       $application->save();
 
-      HMS_Activity_Log::log_activity($application->getUsername(), ACTIVITY_REINSTATE_APPLICATION, UserStatus::getUsername());
+      $activityLog = new HMS_Activity_Log($application->getUsername(), time(), 'ACTIVITY_REINSTATE_APPLICATION', UserStatus::getUsername(), NULL, $banner);
+      $activityLog->save();
 
       $returnCmd = CommandFactory::getCommand('ShowStudentProfile');
       $returnCmd->setBannerId($application->getBannerId());

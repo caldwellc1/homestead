@@ -47,7 +47,7 @@ class AssignRlcApplicantsCommand extends Command {
             $assign->save();
 
             # Log the assignment
-            $activityLog = new HMS_Activity_Log($app->username, time(), ACTIVITY_ASSIGN_TO_RLC, UserStatus::getUsername(), "New Assignment", $student->getBannerId());
+            $activityLog = new HMS_Activity_Log($app->username, time(), 'ACTIVITY_ASSIGN_TO_RLC', UserStatus::getUsername(), "New Assignment", $student->getBannerId());
             $activityLog->save();
         }
 

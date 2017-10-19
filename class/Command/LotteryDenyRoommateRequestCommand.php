@@ -54,7 +54,8 @@ class LotteryDenyRoommateRequestCommand extends Command {
         }
 
         # Log that it happened
-        HMS_Activity_Log::log_activity(UserStatus::getUsername(), ACTIVITY_LOTTERY_ROOMMATE_DENIED, UserStatus::getUsername(), 'Captcha words: ' . $captcha);
+        $activityLog = new HMS_Activity_Log(UserStatus::getUsername(), time(), 'ACTIVITY_LOTTERY_ROOMMATE_DENIED', UserStatus::getUsername(), 'Captcha words: ' . $captcha, $banner);
+        $activityLog->save();
 
         # Success
         \NQ::simple('hms', NotificationView::SUCCESS, 'The roommate request was successfully declined.');

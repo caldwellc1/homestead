@@ -59,7 +59,7 @@ class AddNoteCommand extends Command {
             throw new InvalidArgumentException('Missing banner id.');
         }
 
-        $activityLog = new HMS_Activity_Log($username, time(), ACTIVITY_ADD_NOTE, UserStatus::getUsername(), $note, $banner);
+        $activityLog = new HMS_Activity_Log($username, time(), 'ACTIVITY_ADD_NOTE', UserStatus::getUsername(), $note, $banner);
         $activityLog->save();
 
         # Redirect back to whereever the user came from

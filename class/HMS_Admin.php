@@ -1,4 +1,4 @@
-0<?php
+<?php
 
 namespace Homestead;
 
@@ -59,15 +59,10 @@ class HMS_Admin
 
             # Start logging activities
             $notes = "Attempted to update username: ".trim($names[0])."=>".trim($names[1]);
-<<<<<<< ff5dd9a2316bd9531e9270eda8b556194171cff0
-            HMS_Activity_Log::log_activity(trim($names[0]), ACTIVITY_USERNAME_UPDATED, \Current_User::getUsername(), $notes);
-            HMS_Activity_Log::log_activity(trim($names[1]), ACTIVITY_USERNAME_UPDATED, \Current_User::getUsername(), $notes);
-=======
-            $activityLog = new HMS_Activity_Log(trim($names[0]), trim(), ACTIVITY_USERNAME_UPDATED, Current_User::getUsername(), $notes, $banner);
+            $activityLog = new HMS_Activity_Log(trim($names[0]), time(), 'ACTIVITY_USERNAME_UPDATED', \Current_User::getUsername(), $notes, $banner);
             $activityLog->save();
-            $activityLog = new HMS_Activity_Log(trim($names[1]), trim(), ACTIVITY_USERNAME_UPDATED, Current_User::getUsername(), $notes, $banner);
+            $activityLog = new HMS_Activity_Log(trim($names[1]), time(), 'ACTIVITY_USERNAME_UPDATED', \Current_User::getUsername(), $notes, $banner);
             $activityLog->save();
->>>>>>> working
 
             # Open a DB connection and try to update applications
             $db = new PHPWS_DB('hms_new_application');
@@ -87,12 +82,8 @@ class HMS_Admin
 
                     # Log Successful application update
                     $notes = "Application Updated";
-<<<<<<< ff5dd9a2316bd9531e9270eda8b556194171cff0
-                    HMS_Activity_Log::log_activity(trim($names[1]), ACTIVITY_APPLICATION_UPDATED, \Current_User::getUsername(), $notes);
-=======
-                    $activityLog = new HMS_Activity_Log(trim($names[1]), time(), ACTIVITY_APPLICATION_UPDATED, Current_User::getUsername(), $notes, $banner);
+                    $activityLog = new HMS_Activity_Log(trim($names[1]), time(), 'ACTIVITY_APPLICATION_UPDATED', \Current_User::getUsername(), $notes, $banner);
                     $activityLog->save();
->>>>>>> working
                 }
             }
 
@@ -111,12 +102,8 @@ class HMS_Admin
                     $tpl['status'][] = array('USERNAME'=>$names[0], 'MESSAGE' => "$rows_affected assignment records updated.");
 
                     $notes = "Assignments Updated";
-<<<<<<< ff5dd9a2316bd9531e9270eda8b556194171cff0
-                    HMS_Activity_Log::log_activity(trim($names[1]), ACTIVITY_ASSIGNMENTS_UPDATED, \Current_User::getUsername(), $notes);
-=======
-                    $activityLog = new HMS_Activity_Log(trim($names[1]), time(), ACTIVITY_ASSIGNMENTS_UPDATED, Current_User::getUsername(), $notes, $banner);
+                    $activityLog = new HMS_Activity_Log(trim($names[1]), time(), 'ACTIVITY_ASSIGNMENTS_UPDATED', \Current_User::getUsername(), $notes, $banner);
                     $activityLog->save();
->>>>>>> working
                 }
             }
 
@@ -135,12 +122,8 @@ class HMS_Admin
                     $tpl['status'][] = array('USERNAME'=>$names[0], 'MESSAGE' => "$rows_affected banner queue records updated.");
 
                     $notes = "Banner Queue Updated";
-<<<<<<< ff5dd9a2316bd9531e9270eda8b556194171cff0
-                    HMS_Activity_Log::log_activity(trim($names[1]), ACTIVITY_BANNER_QUEUE_UPDATED, \Current_User::getUsername(), $notes);
-=======
-                    $activityLog = new HMS_Activity_Log(trim($names[1]), time(), ACTIVITY_BANNER_QUEUE_UPDATED, Current_User::getUsername(), $notes, $banner);
+                    $activityLog = new HMS_Activity_Log(trim($names[1]), time(), 'ACTIVITY_BANNER_QUEUE_UPDATED', \Current_User::getUsername(), $notes, $banner);
                     $activityLog->save();
->>>>>>> working
                 }
             }
 
@@ -159,12 +142,8 @@ class HMS_Admin
                     $tpl['status'][] = array('USERNAME'=>$names[0], 'MESSAGE' => "$rows_affected roommate requestor records updated.");
 
                     $notes = "Roommates Updated";
-<<<<<<< ff5dd9a2316bd9531e9270eda8b556194171cff0
-                    HMS_Activity_Log::log_activity(trim($names[1]), ACTIVITY_ROOMMATES_UPDATED, \Current_User::getUsername(), $notes);
-=======
-                    $activityLog = new HMS_Activity_Log(trim($names[1]), time(), ACTIVITY_ROOMMATES_UPDATED, Current_User::getUsername(), $notes, $banner);
+                    $activityLog = new HMS_Activity_Log(trim($names[1]), time(), 'ACTIVITY_ROOMMATES_UPDATED', \Current_User::getUsername(), $notes, $banner);
                     $activityLog->save();
->>>>>>> working
                 }
             }
 
@@ -182,12 +161,8 @@ class HMS_Admin
                     $tpl['status'][] = array('USERNAME'=>$names[0], 'MESSAGE' => "$rows_affected roommate requestee records updated.");
 
                     $notes = "Roommate Requests Updated";
-<<<<<<< ff5dd9a2316bd9531e9270eda8b556194171cff0
-                    HMS_Activity_Log::log_activity(trim($names[1]), ACTIVITY_ROOMMATE_REQUESTS_UPDATED, \Current_User::getUsername(), $notes);
-=======
-                    $activityLog = new HMS_Activity_Log(trim($names[1]), time(), ACTIVITY_ROOMMATE_REQUESTS_UPDATED, Current_User::getUsername(), $notes, $banner);
+                    $activityLog = new HMS_Activity_Log(trim($names[1]), time(), 'ACTIVITY_ROOMMATE_REQUESTS_UPDATED', \Current_User::getUsername(), $notes, $banner);
                     $activityLog->save();
->>>>>>> working
                 }
             }
 
@@ -206,12 +181,8 @@ class HMS_Admin
                     $tpl['status'][] = array('USERNAME'=>$names[0], 'MESSAGE' => "$rows_affected RLC records updated.");
 
                     $notes = "RLCs Updated";
-<<<<<<< ff5dd9a2316bd9531e9270eda8b556194171cff0
-                    HMS_Activity_Log::log_activity(trim($names[1]), ACTIVITY_RLC_APPLICATION_UPDATED, \Current_User::getUsername(), $notes);
-=======
-                    $activityLog = new HMS_Activity_Log(trim($names[1]), trim(), ACTIVITY_RLC_APPLICATION_UPDATED, Current_User::getUsername(), $notes, $banner);
+                    $activityLog = new HMS_Activity_Log(trim($names[1]), trim(), 'ACTIVITY_RLC_APPLICATION_UPDATED', \Current_User::getUsername(), $notes, $banner);
                     $activityLog->save();
->>>>>>> working
                 }
             }
         }

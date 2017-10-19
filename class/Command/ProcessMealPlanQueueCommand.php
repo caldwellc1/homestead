@@ -80,7 +80,8 @@ class ProcessMealPlanQueueCommand extends Command {
             $student = StudentFactory::getStudentByBannerId($plan->getBannerId(), $term->term);
 
             // Log that the meal plan was sent to Banner
-            HMS_Activity_Log::log_activity($student->getUsername(), ACTIVITY_MEAL_PLAN_SENT, UserStatus::getUsername(), 'Meal Plan sent to Banner: ' . HMS_Util::formatMealOption($plan->getPlanCode()));
+            $activityLog = new HMS_Activity_Log($student->getUsername(), time(), 'ACTIVITY_MEAL_PLAN_SENT', UserStatus::getUsername(), 'Meal Plan sent to Banner: ' . HMS_Util::formatMealOption($plan->getPlanCode()), $student->getBannerId());
+            $activityLog->save();
         }
 
         if(empty($failures)){

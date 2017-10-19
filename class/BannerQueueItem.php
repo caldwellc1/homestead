@@ -113,10 +113,10 @@ class BannerQueueItem {
                                     $this->building_code,
                                     $this->bed_code);
                 if($result === TRUE) {
-                    $activity_log = new HMS_Activity_Log($this->asu_username, time(), ACTIVITY_ASSIGNMENT_REPORTED,
+                    $activityLog = new HMS_Activity_Log($this->asu_username, time(), 'ACTIVITY_ASSIGNMENT_REPORTED',
                                     Current_User::getUsername(), $this->term . ' ' . $this->building_code . ' ' .
                                     $this->bed_code, $this->banner_id);
-                    $activity_log->save();
+                    $activityLog->save();
                 }
                 break;
             case BANNER_QUEUE_REMOVAL:
@@ -128,10 +128,10 @@ class BannerQueueItem {
                                     $this->percent_refund);
 
                 if($result === TRUE) {
-                    $activity_log = new HMS_Activity_Log($this->asu_username, time(), ACTIVITY_REMOVAL_REPORTED,
+                    $activityLog = new HMS_Activity_Log($this->asu_username, time(), 'ACTIVITY_REMOVAL_REPORTED',
                                     Current_User::getUsername(), $this->term . ' ' . $this->building_code . ' ' .
                                     $this->bed_code . ' ', $this->banner_id);
-                    $activity_log->save();
+                    $activityLog->save();
                 }
                 break;
         }

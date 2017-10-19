@@ -29,7 +29,8 @@ class DenyRlcApplicationCommand extends Command {
         $app->denied = 1;
         $app->save();
 
-        HMS_Activity_Log::log_activity($app->username, 28, \Current_User::getUsername(), 'Application Denied');
+        $activityLog = new HMS_Activity_Log($app->username, time(), 'ACTIVITY_DENIED_RLC_APPLICATION', \Current_User::getUsername(), 'Application Denied', $banner);
+        $activityLog->save();
 
         \NQ::simple('hms', NotificationView::SUCCESS, 'Application denied.');
 

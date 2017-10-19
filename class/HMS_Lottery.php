@@ -310,7 +310,8 @@ class HMS_Lottery {
         foreach ($result as $row) {
             $student = StudentFactory::getStudentByUsername($row['username'], $term);
             HMS_Email::send_lottery_invite_reminder($student, $student->getName(), $row['invite_expires_on'], $year);
-            HMS_Activity_Log::log_activity($row['username'], ACTIVITY_LOTTERY_REMINDED, 'hms');
+            $activityLog = new HMS_Activity_Log($row['username'], time(), 'ACTIVITY_LOTTERY_REMINDED', 'hms', NULL, $student->getBannerId());
+            $activityLog->save();
         }
     }
 
@@ -337,7 +338,8 @@ class HMS_Lottery {
             $bed = new HMS_Bed($row['bed_id']);
             $hall_room = $bed->where_am_i();
             HMS_Email::send_lottery_roommate_reminder($row['asu_username'], $student->getName(), $row['expires_on'], $requestor->getName(), $hall_room, $year);
-            HMS_Activity_Log::log_activity($row['asu_username'], ACTIVITY_LOTTERY_ROOMMATE_REMINDED, 'hms');
+            $activity_log = new HMS_Activity_Log($row['asu_username'], time(), 'ACTIVITY_LOTTERY_ROOMMATE_REMINDED', 'hms', NULL, $student->getBannerId());
+            $activity_log->save();
         }
     }
 

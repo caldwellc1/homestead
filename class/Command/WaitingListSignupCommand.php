@@ -66,7 +66,8 @@ class WaitingListSignupCommand extends Command {
         $application->save();
 
         // Log it to the activity log
-        HMS_Activity_Log::log_activity($student->getUsername(), ACTIVITY_REAPP_WAITINGLIST_APPLY, UserStatus::getUsername());
+        $activityLog = new HMS_Activity_Log($student->getUsername(), time(), 'ACTIVITY_REAPP_WAITINGLIST_APPLY', UserStatus::getUsername(), NULL, $student->getBannerId());
+        $activityLog->save();
 
         // Success command
         $cmd = CommandFactory::getCommand('ShowStudentMenu');

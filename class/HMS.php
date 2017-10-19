@@ -30,8 +30,9 @@ abstract class HMS {
         // This hack is the most awful hack ever.  Fix phpWebSite so that
         // user logins are logged separately.
         if(\Current_User::isLogged() && !isset($_SESSION['HMS_LOGGED_THE_LOGIN'])) {
-            $username = strtolower(\Current_User::getUsername());
-            HMS_Activity_Log::log_activity($username,ACTIVITY_LOGIN, $username, NULL);
+            $username = strtolower(Current_User::getUsername());
+            $activityLog = new HMS_Activity_Log($username, time(), 'ACTIVITY_LOGIN', $username, NULL);
+            $activityLog->save();
             $_SESSION['HMS_LOGGED_THE_LOGIN'] = $username;
         }
 

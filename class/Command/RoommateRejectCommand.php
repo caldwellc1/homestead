@@ -57,14 +57,12 @@ class RoommateRejectCommand extends Command
 
         $roommate->delete();
 
-        HMS_Activity_Log::log_activity($roommate->requestor,
-                                       ACTIVITY_REJECTED_AS_ROOMMATE,
-                                       $roommate->requestee,
-                                       "$roommate->requestee rejected $roommate->requestor's request");
-        HMS_Activity_Log::log_activity($roommate->requestee,
-                                       ACTIVITY_REJECTED_AS_ROOMMATE,
-                                       $roommate->requestor,
-                                       "$roommate->requestee rejected $roommate->requestor's request");
+        $activityLog = new HMS_Activity_Log($roommate->requestor,time(), 'ACTIVITY_REJECTED_AS_ROOMMATE', $roommate->requestee,
+                                       "$roommate->requestee rejected $roommate->requestor's request", $requestor->getBannerId());
+        $activityLog->save();
+        $activityLog = new HMS_Activity_Log($roommate->requestee, time(), 'ACTIVITY_REJECTED_AS_ROOMMATE', $roommate->requestor,
+                                       "$roommate->requestee rejected $roommate->requestor's request", $banner);
+        $activityLog->save();
 
         // Email both parties
         HMS_Email::send_reject_emails($roommate);

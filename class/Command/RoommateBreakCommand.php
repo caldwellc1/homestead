@@ -66,14 +66,12 @@ class RoommateBreakCommand extends Command
 
         $other = StudentFactory::getStudentByUsername($roommate->get_other_guy($username), $roommate->term);;
 
-        HMS_Activity_Log::log_activity($other->getUsername(),
-                                       ACTIVITY_STUDENT_BROKE_ROOMMATE,
-                                       $username,
-                                       "$username broke pairing, CAPTCHA: $verified");
-        HMS_Activity_Log::log_activity($username,
-                                       ACTIVITY_STUDENT_BROKE_ROOMMATE,
-                                       $other->getUsername(),
-                                       "$username broke pairing, CAPTCHA: $verified");
+        $activityLog = new HMS_Activity_Log($other->getUsername(),time(), 'ACTIVITY_STUDENT_BROKE_ROOMMATE', $username,
+                                       "$username broke pairing, CAPTCHA: $verified", $banner);
+        $activityLog->save();
+        $activityLog = new HMS_Activity_Log($username, time(), 'ACTIVITY_STUDENT_BROKE_ROOMMATE', $other->getUsername(),
+                                       "$username broke pairing, CAPTCHA: $verified", $banner);
+        $activityLog->save();
 
         // Email both parties
         HMS_Email::send_break_emails($roommate, $username);

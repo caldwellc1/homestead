@@ -188,7 +188,8 @@ class SubmitRoomChangeRequestCommand extends Command {
         // Immediately transition to the StudentApproved state.
         $participant->transitionTo(new ParticipantStateStudentApproved($participant, time(), null, UserStatus::getUsername()));
 
-        HMS_Activity_Log::log_activity(UserStatus::getUsername(), ACTIVITY_ROOM_CHANGE_SUBMITTED, UserStatus::getUsername(FALSE), $reason);
+        $activityLog = new HMS_Activity_Log(UserStatus::getUsername(), time(), 'ACTIVITY_ROOM_CHANGE_SUBMITTED', UserStatus::getUsername(FALSE), $reason, $student->getBannerId());
+        $activityLog->save();
 
         // Email sender with acknowledgment
         HMS_Email::sendRoomChangeRequestReceivedConfirmation($student);

@@ -280,7 +280,8 @@ class RoommateProfile {
             throw new DatabaseException($result->toString());
         }
 
-        HMS_Activity_Log::log_activity(UserStatus::getUsername(), ACTIVITY_PROFILE_CREATED, UserStatus::getUsername(), '');
+        $activityLog = new HMS_Activity_Log(UserStatus::getUsername(), time(), 'ACTIVITY_PROFILE_CREATED', UserStatus::getUsername(), '', $banner);
+        $activityLog->save();
 
         return $result;
     }

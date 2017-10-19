@@ -96,8 +96,10 @@ class CreateRoommateGroupCommand extends Command {
             \NQ::simple('hms', NotificationView::ERROR, 'Error saving roommate group.');
             $viewCmd->redirect();
         }else{
-            HMS_Activity_Log::log_activity($roommate1, ACTIVITY_ADMIN_ASSIGNED_ROOMMATE, UserStatus::getUsername(), $roommate2);
-            HMS_Activity_Log::log_activity($roommate2, ACTIVITY_ADMIN_ASSIGNED_ROOMMATE, UserStatus::getUsername(), $roommate1);
+            $activityLog = new HMS_Activity_Log($roommate1, time(), 'ACTIVITY_ADMIN_ASSIGNED_ROOMMATE', UserStatus::getUsername(), $roommate2, $student1->getBannerId());
+            $activityLog->save();
+            $activityLog = new HMS_Activity_Log($roommate2, time(), 'ACTIVITY_ADMIN_ASSIGNED_ROOMMATE', UserStatus::getUsername(), $roommate1, $student2->getBannerId());
+            $activityLog->save();
 
             \NQ::simple('hms', NotificationView::SUCCESS, 'Roommate group created successfully.');
             $viewCmd->redirect();

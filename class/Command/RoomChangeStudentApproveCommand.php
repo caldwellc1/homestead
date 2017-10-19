@@ -73,11 +73,13 @@ class RoomChangeStudentApproveCommand extends Command {
 
             // If there was a captcha, then log the activity
             if($captchaResult !== false){
-              HMS_Activity_Log::log_activity(UserStatus::getUsername(), ACTIVITY_ROOM_CHANGE_AGREED, UserStatus::getUsername(FALSE), 'Request id: ' . $requestId . ' Captcha: ' . $captchaResult);
+              $activityLog = new HMS_Activity_Log(UserStatus::getUsername(), time(), 'ACTIVITY_ROOM_CHANGE_AGREED', UserStatus::getUsername(FALSE), 'Request id: ' . $requestId . ' Captcha: ' . $captchaResult, $student->getBannerId());
+              $activityLog->save();
             }
         }else {
             // Log the activity, but don't include the captca words
-            HMS_Activity_Log::log_activity(UserStatus::getUsername(), ACTIVITY_ROOM_CHANGE_AGREED, UserStatus::getUsername(FALSE), 'Request id: ' . $requestId);
+            $activityLog = new HMS_Activity_Log(UserStatus::getUsername(), time(), 'ACTIVITY_ROOM_CHANGE_AGREED', UserStatus::getUsername(FALSE), 'Request id: ' . $requestId, $student->getBannerId());
+            $activityLog->save();
         }
 
         // Transition to StudentApproved state

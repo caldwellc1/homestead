@@ -36,7 +36,8 @@ class RemoveRlcAssignmentCommand extends Command{
 
         $rlcApp = $assignment->getApplication();
 
-        HMS_Activity_Log::log_activity($rlcApp->getUsername(), ACTIVITY_RLC_UNASSIGN, \Current_User::getUsername(), "Removed from RLC: $rlcName");
+        $activityLog = new HMS_Activity_Log($rlcApp->getUsername(), time(), 'ACTIVITY_RLC_UNASSIGN', \Current_User::getUsername(), "Removed from RLC: $rlcName", $banner);
+        $activityLog->save();
 
         echo json_encode(array("message" => "Membership removed.", "type" => "success"));
         exit;

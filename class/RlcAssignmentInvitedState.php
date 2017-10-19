@@ -34,6 +34,7 @@ class RlcAssignmentInvitedState extends RlcAssignmentState {
 
         HMS_Email::sendRlcInviteEmail($student, $community, $term, $this->respondByTimestamp);
 
-        HMS_Activity_Log::log_activity($student->getUsername(), ACTIVITY_RLC_INVITE_SENT, UserStatus::getUsername());
+        $activityLog = new HMS_Activity_Log($student->getUsername(), time(), 'ACTIVITY_RLC_INVITE_SENT', UserStatus::getUsername(), NULL, $student->getBannerId());
+        $activityLog->save();
     }
 }

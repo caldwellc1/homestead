@@ -210,7 +210,8 @@ class Term
         \PHPWS_Settings::save('hms');
 
         $username = \Current_User::getUsername();
-        HMS_Activity_Log::log_activity($username, ACTIVITY_CHANGE_ACTIVE_TERM, $username, "Active term set by $username to $term");
+        $activityLog = new HMS_Activity_Log($username, time(), 'ACTIVITY_CHANGE_ACTIVE_TERM', $username, "Active term set by $username to $term", $banner);
+        $activityLog->save();
     }
 
     public static function getPrintableCurrentTerm()

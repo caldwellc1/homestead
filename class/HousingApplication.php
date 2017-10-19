@@ -192,9 +192,11 @@ class HousingApplication {
         $username = UserStatus::getUsername();
 
         if (isset($username) && !is_null($username)) {
-            HMS_Activity_Log::log_activity($this->getUsername(), ACTIVITY_SUBMITTED_APPLICATION, $username, 'Term: ' . $this->getTerm());
+            $activityLog = new HMS_Activity_Log($this->getUsername(), time(), 'ACTIVITY_SUBMITTED_APPLICATION', $username, 'Term: ' . $this->getTerm(), $banner);
+            $activityLog->save();
         } else {
-            HMS_Activity_Log::log_activity($this->getUsername(), ACTIVITY_SUBMITTED_APPLICATION, 'hms', 'Term: ' . $this->getTerm());
+            $activityLog = new HMS_Activity_Log($this->getUsername(), time(), 'ACTIVITY_SUBMITTED_APPLICATION', 'hms', 'Term: ' . $this->getTerm(), $banner);
+            $activityLog->save();
         }
     }
 
@@ -243,7 +245,8 @@ class HousingApplication {
         }
 
         // Log the fact that the application was sent to banner
-        HMS_Activity_Log::log_activity($this->getUsername(), ACTIVITY_APPLICATION_REPORTED, UserStatus::getUsername());
+        $activityLog = new HMS_Activity_Log($this->getUsername(), time(), 'ACTIVITY_APPLICATION_REPORTED', UserStatus::getUsername(), NULL, $banner);
+        $activityLog->save();
     }
 
     /**
@@ -331,7 +334,8 @@ class HousingApplication {
         $this->cancelled_reason = $reasonKey;
 
         // Log that this happened
-        HMS_Activity_Log::log_activity($this->getUsername(), ACTIVITY_CANCEL_HOUSING_APPLICATION, \Current_User::getUsername(), Term::toString($this->getTerm()) . ': ' . $reasons[$reasonKey]);
+        $activityLog = new HMS_Activity_Log($this->getUsername(), time(), 'ACTIVITY_CANCEL_HOUSING_APPLICATION', \Current_User::getUsername(), Term::toString($this->getTerm()) . ': ' . $reasons[$reasonKey], $banner);
+        $activityLog->save();
     }
 
 

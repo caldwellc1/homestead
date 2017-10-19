@@ -158,7 +158,8 @@ class LotteryConfirmCommand extends Command {
         }
 
         // Log the assignment
-        HMS_Activity_Log::log_activity(UserStatus::getUsername(), ACTIVITY_LOTTERY_ROOM_CHOSEN, UserStatus::getUsername(), 'Captcha: ' . $captcha);
+        $activityLog = new HMS_Activity_Log(UserStatus::getUsername(), time(), 'ACTIVITY_LOTTERY_ROOM_CHOSEN', UserStatus::getUsername(), 'Captcha: ' . $captcha, $student->getBannerId());
+        $activityLog->save();
 
         // Update the student's meal plan in the housing application, just for future reference
         $app = HousingApplication::getApplicationByUser($student->getUsername(), $term);
@@ -188,7 +189,8 @@ class LotteryConfirmCommand extends Command {
                 $successCmd->redirect();
             }
 
-            HMS_Activity_Log::log_activity($username, ACTIVITY_LOTTERY_REQUESTED_AS_ROOMMATE, $student->getUsername(), 'Expires: ' . HMS_Util::get_long_date_time($expires_on));
+            $activityLog = new HMS_Activity_Log($username, time(), 'ACTIVITY_LOTTERY_REQUESTED_AS_ROOMMATE', $student->getUsername(), 'Expires: ' . HMS_Util::get_long_date_time($expires_on), $student->getBannerId());
+            $activityLog->save();
 
             # Invite the selected roommates
             $roomie = StudentFactory::getStudentByUsername($username, $term);

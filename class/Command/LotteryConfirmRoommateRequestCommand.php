@@ -76,7 +76,8 @@ class LotteryConfirmRoommateRequestCommand extends Command {
         HMS_Lottery::confirm_roommate_request(UserStatus::getUsername(), $requestId);
 
         // Log the fact that the roommate was accepted and successfully assigned
-        HMS_Activity_Log::log_activity(UserStatus::getUsername(), ACTIVITY_LOTTERY_CONFIRMED_ROOMMATE,UserStatus::getUsername(), "Captcha: \"$captcha\"");
+        $activityLog = new HMS_Activity_Log(UserStatus::getUsername(), time(), 'ACTIVITY_LOTTERY_CONFIRMED_ROOMMATE',UserStatus::getUsername(), "Captcha: \"$captcha\"", $student->getBannerId());
+        $activityLog->save();
 
 
         // Check for an RLC membership and update status if necessary

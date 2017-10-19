@@ -523,7 +523,8 @@ class HMS_Assignment extends HMS_Item {
         }
 
         // Log the assignment
-        HMS_Activity_Log::log_activity($username, ACTIVITY_ASSIGNED, UserStatus::getUsername(), $term . ' ' . $hall->hall_name . ' ' . $room->room_number . ' ' . $notes);
+        $activityLog = new HMS_Activity_Log($username, time(), 'ACTIVITY_ASSIGNED', UserStatus::getUsername(), $term . ' ' . $hall->hall_name . ' ' . $room->room_number . ' ' . $notes, $student->getBannerId());
+        $activityLog->save();
 
         // Insert assignment into History table
         AssignmentHistory::makeAssignmentHistory($assignment);
@@ -632,7 +633,8 @@ class HMS_Assignment extends HMS_Item {
         }
 
         // Log in the activity log
-        HMS_Activity_Log::log_activity($username, ACTIVITY_REMOVED, UserStatus::getUsername(), $term . ' ' . $banner_building_code . ' ' . $banner_bed_id . ' ' . $notes . 'Refund: ' . $refund);
+        $activityLog = new HMS_Activity_Log($username, time(), 'ACTIVITY_REMOVED', UserStatus::getUsername(), $term . ' ' . $banner_building_code . ' ' . $banner_bed_id . ' ' . $notes . 'Refund: ' . $refund, $student->getBannerId());
+        $activityLog->save();
 
         // Insert into history table
         AssignmentHistory::makeUnassignmentHistory($assignment, $reason);
@@ -779,7 +781,8 @@ class HMS_Assignment extends HMS_Item {
             AssignmentHistory::makeAssignmentHistory($assignment);
 
             // Log in the activity log
-            HMS_Activity_Log::log_activity($studentObj->username, ACTIVITY_ROOM_CHANGE_REASSIGNED, UserStatus::getUsername(), "Room Change Approved in $term From {$student->old_bldg_code} {$student->old_room_code} to {$student->new_bldg_code} {$student->new_room_code}");
+            $activityLog = new HMS_Activity_Log($studentObj->username, time(), 'ACTIVITY_ROOM_CHANGE_REASSIGNED', UserStatus::getUsername(), "Room Change Approved in $term From {$student->old_bldg_code} {$student->old_room_code} to {$student->new_bldg_code} {$student->new_room_code}", $student->getBannerId());
+            $activityLog->save();
         }
 
         $db->query('COMMIT');

@@ -84,7 +84,8 @@ class CancelHousingApplicationCommand extends Command {
           $rlcApplication->denied = 1;
           $rlcApplication->save();
 
-          HMS_Activity_Log::log_activity($username, ACTIVITY_DENIED_RLC_APPLICATION, \Current_User::getUsername(), Term::toString($term) . ' Denied RLC Application due to Contract Cancellation');
+          $activityLog = new HMS_Activity_Log($username, time(), 'ACTIVITY_DENIED_RLC_APPLICATION', \Current_User::getUsername(), Term::toString($term) . ' Denied RLC Application due to Contract Cancellation', $banner);
+          $activityLog->save();
         }
 
         // Cancel the application

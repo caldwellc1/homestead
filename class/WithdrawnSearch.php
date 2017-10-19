@@ -86,7 +86,7 @@ class WithdrawnSearch {
 
             $this->actions[$student->getUsername()][] = 'Found Housing Application; Student Type: ' . $app->getStudentType() . ' App Term: ' . $app->getApplicationTerm();
             $this->actions[$student->getUsername()][] = 'Marked application as cancelled (reason: withdrawn)';
-            $activityLog = new HMS_Activity_Log($student->getUsername(), time(), ACTIVITY_CANCEL_HOUSING_APPLICATION, UserStatus::getUsername(), 'Application automatically cancelled by Withdrawn Search', $student->getBannerId());
+            $activityLog = new HMS_Activity_Log($student->getUsername(), time(), 'ACTIVITY_CANCEL_HOUSING_APPLICATION', UserStatus::getUsername(), 'Application automatically cancelled by Withdrawn Search', $student->getBannerId());
             $activityLog->save();
         }
     }
@@ -110,7 +110,7 @@ class WithdrawnSearch {
             }
 
             $this->actions[$student->getUsername()][] = 'Removed assignment: ' . $location;
-            $activityLog = new HMS_Activity_Log($student->getUsername(), time(), ACTIVITY_WITHDRAWN_ASSIGNMENT_DELETED, UserStatus::getUsername(), 'Withdrawn search: ' . $location, $student->getBannerId());
+            $activityLog = new HMS_Activity_Log($student->getUsername(), time(), 'ACTIVITY_WITHDRAWN_ASSIGNMENT_DELETED', UserStatus::getUsername(), 'Withdrawn search: ' . $location, $student->getBannerId());
             $activityLog->save();
 
             // Check for a meal plan, and remove it if it hasn't been sent yet
@@ -146,9 +146,9 @@ class WithdrawnSearch {
                 }
 
                 $this->actions[$student->getUsername()][] = "Roommate request removed. {$rm->requestor} -> {$rm->requestee}";
-                $activityLog = new HMS_Activity_Log($rm->requestor, time(), ACTIVITY_WITHDRAWN_ROOMMATE_DELETED, UserStatus::getUsername(), "Withdarwn search; {$rm->requestor}->{$rm->requestee}", $student->getBannerId());
+                $activityLog = new HMS_Activity_Log($rm->requestor, time(), 'ACTIVITY_WITHDRAWN_ROOMMATE_DELETED', UserStatus::getUsername(), "Withdarwn search; {$rm->requestor}->{$rm->requestee}", $student->getBannerId());
                 $activityLog->save();
-                $activityLog = new HMS_Activity_Log($rm->requestee, time(), ACTIVITY_WITHDRAWN_ROOMMATE_DELETED, UserStatus::getUsername(), "withdrawn search; {$rm->requestor}->{$rm->requestee}", $student->getBannerId());
+                $activityLog = new HMS_Activity_Log($rm->requestee, time(), 'ACTIVITY_WITHDRAWN_ROOMMATE_DELETED', UserStatus::getUsername(), "withdrawn search; {$rm->requestor}->{$rm->requestee}", $student->getBannerId());
                 $activityLog->save();
                 # TODO: notify the other roommate, perhaps?
             }
@@ -170,7 +170,7 @@ class WithdrawnSearch {
             //TODO catch/handle exceptions
             $rlcAssignment->delete();
             $this->actions[$student->getUsername()][] = 'Removed RLC assignment: ' . $rlc->get_community_name();
-            $activityLog = new HMS_Activity_Log($student->getUsername(), time(), ACTIVITY_WITHDRAWN_RLC_APP_DENIED, UserStatus::getUsername(), 'Withdrawn search', $student->getBannerId());
+            $activityLog = new HMS_Activity_Log($student->getUsername(), time(), 'ACTIVITY_WITHDRAWN_RLC_APP_DENIED', UserStatus::getUsername(), 'Withdrawn search', $student->getBannerId());
             $activityLog->save();
         }
     }
@@ -188,7 +188,7 @@ class WithdrawnSearch {
             // TODO catch/handle exceptions
             $rlcApp->delete();
             $this->actions[$student->getUsername()][] = 'Marked RLC application as denied.';
-            $activityLog = new HMS_Activity_Log($student->getUsername(), time(), ACTIVITY_WITHDRAWN_RLC_APP_DENIED, UserStatus::getUsername(), 'Withdrawn search', $student->getBannerId());
+            $activityLog = new HMS_Activity_Log($student->getUsername(), time(), 'ACTIVITY_WITHDRAWN_RLC_APP_DENIED', UserStatus::getUsername(), 'Withdrawn search', $student->getBannerId());
             $activityLog->save();
         }
     }

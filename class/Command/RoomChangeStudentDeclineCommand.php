@@ -66,7 +66,8 @@ class RoomChangeStudentDeclineCommand extends Command {
         }
 
 
-        HMS_Activity_Log::log_activity(UserStatus::getUsername(), ACTIVITY_ROOM_CHANGE_DECLINE, UserStatus::getUsername(FALSE), 'Request id: ' . $requestId . ' Captcha: ' . $captchaResult);
+        $activityLog = new HMS_Activity_Log(UserStatus::getUsername(), time(), 'ACTIVITY_ROOM_CHANGE_DECLINE', UserStatus::getUsername(FALSE), 'Request id: ' . $requestId . ' Captcha: ' . $captchaResult, $student->getBannerId());
+        $activityLog->save();
 
         // Transition request to cancelled status
         $request->transitionTo(new RoomChangeStateCancelled($request, time(), null, UserStatus::getUsername()));

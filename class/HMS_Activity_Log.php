@@ -28,7 +28,7 @@ class HMS_Activity_Log{
      *
      */
     public function __construct($user_id = null, $timestamp = null,
-    $activity = null, $actor = null, $notes = null)
+    $activity = null, $actor = null, $notes = null, $banner_id = null)
     {
         if(!is_null($activity)){
             $this->activity_text = HMS_Activity_Log::get_text_activity($activity);
@@ -39,6 +39,7 @@ class HMS_Activity_Log{
         $this->set_activity($activity);
         $this->set_actor($actor);
         $this->set_notes($notes);
+        $this->set_banner_id($banner_id);
     }
 
     public function load($id){
@@ -59,9 +60,10 @@ class HMS_Activity_Log{
         if(UserStatus::isMasquerading()) {
             $this->notes .= " Admin: " . UserStatus::getUsername(FALSE); // get the *real* username
         }
+
         $db = PdoFactory::getPdoInstance();
-        $sql = "INSERT INTO hms_activity_log(user_id, timestamp, activity, actor, notes, banner_id)
-            VALUES (:user, :times, (SELECT id FROM hms_activities WHERE activity = :activity), :actor, :notes, :banner)";
+        $sql = "INSERT INTO hms_activity_log (user_id, timestamp, activity, actor, notes, banner_id)
+            VALUES (:user, :times, (SELECT hms_activities.id FROM hms_activities WHERE hms_activities.action = :activity), :actor, :notes, :banner)";
         $sth = $db->prepare($sql);
         $sth->execute(array('user' => $this->get_user_id(), 'times' => $this->get_timestamp(),
         'activity' => $this->get_activity(), 'actor' => $this->get_actor(), 'notes' => $this->get_notes(), 'banner' => $this->get_banner_id()));
@@ -72,7 +74,7 @@ class HMS_Activity_Log{
     /**
      * Returns the activities description
      */
-    public function get_text_activity_by_action()
+    public function get_text_activity()
     {
         $db = PdoFactory::getPdoInstance();
         $sql = "SELECT description
@@ -146,6 +148,13 @@ class HMS_Activity_Log{
      * Mutator Methods *
      ******************/
 
+    public function get_banner_id(){
+        return $this->banner_id;
+    }
+
+    public function set_banner_id($id){
+        $this->banner_id = $id;
+    }
     public function get_user_id(){
         return $this->user_id;
     }
@@ -184,5 +193,94 @@ class HMS_Activity_Log{
 
     public function set_notes($notes){
         $this->notes = $notes;
+    }
+
+    public static function getActivityMapping()
+    {
+        return array(
+            'ACTIVITY_LOGIN'                          => "Logged in",
+            'ACTIVITY_AGREED_TO_TERMS'                => "Agreed to terms & agreement",
+            'ACTIVITY_SUBMITTED_APPLICATION'          => "Submitted housing application",
+            'ACTIVITY_SUBMITTED_RLC_APPLICATION'      => "Submitted RLC application",
+            'ACTIVITY_ACCEPTED_TO_RLC'                => "Accepted to an RLC",
+            'ACTIVITY_TOO_OLD_REDIRECTED'             => "Over 25, redirected",
+            'ACTIVITY_REQUESTED_AS_ROOMMATE'          => "Roommate request",
+            'ACTIVITY_REJECTED_AS_ROOMMATE'           => "Roommate request rejected",
+            'ACTIVITY_ACCEPTED_AS_ROOMMATE'           => "Roommate request accepted",
+            'ACTIVITY_STUDENT_BROKE_ROOMMATE'         => "Broke roommate pairing",
+            'ACTIVITY_STUDENT_CANCELLED_ROOMMATE_REQUEST' => "Cancelled roommate request",
+            'ACTIVITY_PROFILE_CREATED'                => "Created a profile",
+            'ACTIVITY_ASSIGNED'                       => "Assigned to room",
+            'ACTIVITY_AUTO_ASSIGNED'                  => "Auto-assigned to room",
+            'ACTIVITY_REMOVED'                        => "Removed from room",
+            'ACTIVITY_ASSIGNMENT_REPORTED'            => "Assignment reported to Banner",
+            'ACTIVITY_REMOVAL_REPORTED'               => "Removal reported to Banner",
+            'ACTIVITY_LETTER_PRINTED'                 => "Assignment letter printed",
+            'ACTIVITY_BANNER_ERROR'                   => "Banner error",
+            'ACTIVITY_LOGIN_AS_STUDENT'               => "Admin logged in as student",
+            'ACTIVITY_ADMIN_ASSIGNED_ROOMMATE'        => "Admin assigned roommate",
+            'ACTIVITY_ADMIN_REMOVED_ROOMMATE'         => "Admin removed roommate",
+            'ACTIVITY_AUTO_CANCEL_ROOMMATE_REQ'       => "Automatically canceled roommate request",
+            'ACTIVITY_WITHDRAWN_APP'                  => "Application withdrawn",
+            'ACTIVITY_WITHDRAWN_ASSIGNMENT_DELETED'   => "Assignment deleted due to withdrawal",
+            'ACTIVITY_WITHDRAWN_ROOMMATE_DELETED'     => "Roommate request deleted due to withdrawal",
+            'ACTIVITY_WITHDRAWN_RLC_APP_DENIED'       => "RLC application denied due to withdrawal",
+            'ACTIVITY_WITHDRAWN_RLC_ASSIGN_DELETED'   => "RLC assignment deleted due to withdrawal",
+            'ACTIVITY_APPLICATION_REPORTED'           => "Application reported to Banner",
+            'ACTIVITY_DENIED_RLC_APPLICATION'         => "Denied RLC Application",
+            'ACTIVITY_UNDENIED_RLC_APPLICATION'       => "Un-denied RLC Application",
+            'ACTIVITY_ASSIGN_TO_RLC'                  => "Assigned student to RLC",
+            'ACTIVITY_RLC_UNASSIGN'                   => "Removed from RLC",
+            'ACTIVITY_USERNAME_UPDATED'               => "Updated Username",
+            'ACTIVITY_APPLICATION_UPDATED'            => "Updated Application",
+            'ACTIVITY_RLC_APPLICATION_UPDATED'        => "Updated RLC Application",
+            'ACTIVITY_RLC_APPLICATION_DELETED'		=> "RLC Application Deleted",
+            'ACTIVITY_ASSIGNMENTS_UPDATED'            => "Updated Assignments",
+            'ACTIVITY_BANNER_QUEUE_UPDATED'           => "Updated Banner Queue",
+            'ACTIVITY_ROOMMATES_UPDATED'              => "Updated Roommates",
+            'ACTIVITY_ROOMMATE_REQUESTS_UPDATED'      => "Updated Roommate Requests",
+            'ACTIVITY_CHANGE_ACTIVE_TERM'             => "Changed Active Term",
+            'ACTIVITY_ADD_NOTE'                       => "Note",
+            'ACTIVITY_LOTTERY_SIGNUP_INVITE'          => "Invited to enter lottery", //depricated
+            'ACTIVITY_LOTTERY_ENTRY'                  => "Lottery entry submitted",
+            'ACTIVITY_LOTTERY_INVITED'                => "Lottery invitation sent",
+            'ACTIVITY_LOTTERY_REMINDED'               => "Lottery invitation reminder sent",
+            'ACTIVITY_LOTTERY_ROOM_CHOSEN'            => "Lottery room chosen",
+            'ACTIVITY_LOTTERY_REQUESTED_AS_ROOMMATE'  => "Requested as a roommate for lottery room",
+            'ACTIVITY_LOTTERY_ROOMMATE_REMINDED'      => "Lottery roommate invivation reminder sent",
+            'ACTIVITY_LOTTERY_CONFIRMED_ROOMMATE'     => "Confirmed lottery roommate request",
+            'ACTIVITY_LOTTERY_EXECUTED'               => "Lottery process executed",
+            'ACTIVITY_CREATE_TERM'                    => "Created a new Term",
+            'ACTIVITY_NOTIFICATION_SENT'              => "Notification sent",
+            'ACTIVITY_ANON_NOTIFICATION_SENT'         => "Anonymous notification sent",
+            'ACTIVITY_HALL_NOTIFIED'                  => "Email notification sent to hall",
+            'ACTIVITY_HALL_NOTIFIED_ANONYMOUSLY'      => "Anonymous email notification sent to hall",
+            'ACTIVITY_LOTTERY_OPTOUT'                 => "Opted-out of waiting list",
+            'ACTIVITY_FLOOR_NOTIFIED_ANONYMOUSLY'     => "Anonymous email notification sent to floor",
+            'ACTIVITY_FLOOR_NOTIFIED'                 => "Email notification sent to floor",
+            'ACTIVITY_ROOM_CHANGE_SUBMITTED'          => "Submitted Room Change Request",
+            'ACTIVITY_ROOM_CHANGE_APPROVED_RD'        => "RD Approved Room Change",
+            'ACTIVITY_ROOM_CHANGE_APPROVED_HOUSING'   => "Housing Approved Room Change",
+            'ACTIVITY_ROOM_CHANGE_COMPLETED'          => "Room Change Completed",
+            'ACTIVITY_ROOM_CHANGE_DENIED'             => "Room Change Denied",
+            'ACTIVITY_ROOM_CHANGE_AGREED'             => "Agreed to Room Change Request",
+            'ACTIVITY_ROOM_CHANGE_DECLINE'            => "Declined Room Change Request",
+            'ACTIVITY_LOTTERY_ROOMMATE_DENIED'        => "Denied lottery roommate invite",
+            'ACTIVITY_CANCEL_HOUSING_APPLICATION'     => "Housing Application Cancelled",
+            'ACTIVITY_ACCEPT_RLC_INVITE'              => "Accepted RLC Invitation",
+            'ACTIVITY_DECLINE_RLC_INVITE'             => "Declined RLC Invitation",
+            'ACTIVITY_RLC_INVITE_SENT'                => "RLC Invitation Sent",
+            'ACTIVITY_EMERGENCY_CONTACT_UPDATED'      => "Emergency Contact & Missing Person information updated",
+            'ACTIVITY_CHECK_IN'                       => 'Checked-in',
+            'ACTIVITY_CHECK_OUT'                      => 'Checked-out',
+            'ACTIVITY_REAPP_WAITINGLIST_APPLY'        => 'Applied for Re-application Waiting List',
+            'ACTIVITY_REINSTATE_APPLICATION'          => 'Reinstated Application',
+            'ACTIVITY_ROOM_CHANGE_REASSIGNED'         => 'Reassigned due to Room Change',
+            'ACTIVITY_CONTRACT_CREATED'               => 'Created a Contract',
+            'ACTIVITY_CONTRACT_SENT_EMAIL'            => 'Contract Sent via Email',
+            'ACTIVITY_CONTRACT_STUDENT_SIGN_EMBEDDED' => 'Student Signed Contract via Embedded Signing',
+            'ACTIVITY_CONTRACT_REMOVED_VOIDED'        => 'Removed Voided Contract',
+            'ACTIVITY_MEAL_PLAN_SENT'                 => 'Meal Plan Reported to Banner'
+        );
     }
 }

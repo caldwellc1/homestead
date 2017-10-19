@@ -262,7 +262,7 @@ class StudentProfileView extends View {
         /********
          * Logs *
         ********/
-        $everything_but_notes = HMS_Activity_Log::get_activity_list(ACTIVITY_ADD_NOTE);
+        $everything_but_notes = HMS_Activity_Log::get_activity_list('ACTIVITY_ADD_NOTE');
         //unset($everything_but_notes[array_search(ACTIVITY_ADD_NOTE, $everything_but_notes)]);
 
         if(\Current_User::allow('hms', 'view_activity_log') && \Current_User::allow('hms', 'view_student_log') ){

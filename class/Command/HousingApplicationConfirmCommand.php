@@ -110,7 +110,8 @@ class HousingApplicationConfirmCommand extends Command {
 
         if($result == TRUE){
             // Log the fact that the application was submitted
-            HMS_Activity_Log::log_activity($username, ACTIVITY_SUBMITTED_APPLICATION, $username);
+            $activityLog = new HMS_Activity_Log($username, time(), 'ACTIVITY_SUBMITTED_APPLICATION', $username, NULL, $student->getBannerId());
+            $activityLog->save();
 
             try{
                 // report the application to banner;

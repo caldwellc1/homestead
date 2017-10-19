@@ -52,7 +52,8 @@ class RlcSelfSelectInviteSaveCommand extends Command {
 
             // Log that the student just signed, but ignore the 'viewing complete' event.
             if($event === 'signing_complete'){
-                HMS_Activity_Log::log_activity($student->getUsername(), ACTIVITY_CONTRACT_STUDENT_SIGN_EMBEDDED, UserStatus::getUsername(), "Student signed contract for $term through the embedded signing process");
+                $activityLog = new HMS_Activity_Log($student->getUsername(), time(), 'ACTIVITY_CONTRACT_STUDENT_SIGN_EMBEDDED', UserStatus::getUsername(), "Student signed contract for $term through the embedded signing process", $student->getBannerId());
+                $activityLog->save();
             }
 
             $roommateRequestId = $context->get('roommateRequestId');
@@ -87,7 +88,8 @@ class RlcSelfSelectInviteSaveCommand extends Command {
             \NQ::simple('hms', NotificationView::SUCCESS, 'You have <strong>declined</strong> your Residential Learning Community invitation.');
 
             // Log this!
-            HMS_Activity_Log::log_activity($student->getUsername(), ACTIVITY_DECLINE_RLC_INVITE, UserStatus::getUsername(), $rlcAssignment->getRlcName());
+            $activityLog = new HMS_Activity_Log($student->getUsername(), time(), 'ACTIVITY_DECLINE_RLC_INVITE', UserStatus::getUsername(), $rlcAssignment->getRlcName(), $student->getBannerId());
+            $activityLog->save();
 
             $menuCmd = CommandFactory::getCommand('ShowStudentMenu');
             $menuCmd->redirect();

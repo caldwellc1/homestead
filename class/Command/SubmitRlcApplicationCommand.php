@@ -112,7 +112,8 @@ class SubmitRlcApplicationCommand extends Command
         }
 
         # Log that this happened
-        HMS_Activity_Log::log_activity($student->getUsername(), ACTIVITY_SUBMITTED_RLC_APPLICATION, $student->getUsername());
+        $activityLog = new HMS_Activity_Log($student->getUsername(), time(), 'ACTIVITY_SUBMITTED_RLC_APPLICATION', $student->getUsername(), NULL, $student->getBannerId());
+        $activityLog->save();
 
         # Send the notification email
         HMS_Email::send_rlc_application_confirmation($student);

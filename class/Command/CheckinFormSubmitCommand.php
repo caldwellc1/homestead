@@ -93,8 +93,8 @@ class CheckinFormSubmitCommand extends Command {
         $checkin->save();
 
         // Add this to the activity log
-        HMS_Activity_Log::log_activity($student->getUsername(), ACTIVITY_CHECK_IN, UserStatus::getUsername(), $assignment->where_am_i());
-
+        $activityLog = new HMS_Activity_Log($student->getUsername(), time(), 'ACTIVITY_CHECK_IN', UserStatus::getUsername(), $assignment->where_am_i(), $student->getBannerId());
+        $activityLog->save();
 
         // Generate the RIC
         $infoCard = new InfoCard($checkin);

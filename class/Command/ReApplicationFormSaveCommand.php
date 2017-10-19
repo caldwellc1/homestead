@@ -133,7 +133,8 @@ class ReApplicationFormSaveCommand extends Command {
         }
 
         // Log the fact that the entry was saved
-        HMS_Activity_Log::log_activity(UserStatus::getUsername(), ACTIVITY_LOTTERY_ENTRY, UserStatus::getUsername());
+        $activityLog = new HMS_Activity_Log(UserStatus::getUsername(),time(), 'ACTIVITY_LOTTERY_ENTRY', UserStatus::getUsername(), NULL, $student->getBannerId());
+        $activityLog->save();
 
         // Send email confirmation
         $year = Term::toString($term) . ' - ' . Term::toString(Term::getNextTerm($term));

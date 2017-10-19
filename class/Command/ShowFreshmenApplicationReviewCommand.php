@@ -60,7 +60,8 @@ class ShowFreshmenApplicationReviewCommand extends Command {
             $agreementCmd->setAgreedCommand($returnCmd);
             $agreementCmd->redirect();
         } else if($event === 'signing_complete'){
-            HMS_Activity_Log::log_activity($student->getUsername(), ACTIVITY_CONTRACT_STUDENT_SIGN_EMBEDDED, UserStatus::getUsername(), "Student signed contract for $term through the embedded signing process");
+            $activityLog = new HMS_Activity_Log($student->getUsername(), time(), 'ACTIVITY_CONTRACT_STUDENT_SIGN_EMBEDDED', UserStatus::getUsername(), "Student signed contract for $term through the embedded signing process", $student->getBannerId());
+            $activityLog->save();
         }
 
         $errorCmd = CommandFactory::getCommand('ShowHousingApplicationForm');

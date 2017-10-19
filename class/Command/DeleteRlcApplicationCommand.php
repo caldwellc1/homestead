@@ -45,7 +45,8 @@ class DeleteRlcApplicationCommand extends Command
             $app->delete();
 
             // Log it
-            HMS_Activity_Log::log_activity(UserStatus::getUsername(), ACTIVITY_RLC_APPLICATION_DELETED, UserStatus::getUsername());
+            $activityLog = new HMS_Activity_Log(UserStatus::getUsername(), time(), 'ACTIVITY_RLC_APPLICATION_DELETED', UserStatus::getUsername(), NULL, $banner);
+            $activityLog->save();
 
             // Show a notification and go back
             \NQ::simple('hms', NotificationView::SUCCESS, 'RLC application deleted.');
