@@ -46,9 +46,11 @@ class DeleteRoommateGroupCommand extends Command {
 
         // Log the success
         $notes = "{$roommate->getRequestor()} requested {$roommate->getRequestee()}";
-        $activityLog = new HMS_Activity_Log($roommate->getRequestor(), time(), 'ACTIVITY_ADMIN_REMOVED_ROOMMATE', UserStatus::getUsername(), $notes, $banner);
+        $requestor = StudentFactory::getStudentByUsername($roommate->getRequestor(), $roommate->term);
+        $requestee = StudentFactory::getStudentByUsername($roommate->getRequestee(), $roommate->term);
+        $activityLog = new HMS_Activity_Log($roommate->getRequestor(), time(), 'ACTIVITY_ADMIN_REMOVED_ROOMMATE', UserStatus::getUsername(), $notes, $requestor->getBannerId());
         $activityLog->save();
-        $activityLog = new HMS_Activity_Log($roommate->getRequestee(), time(), 'ACTIVITY_ADMIN_REMOVED_ROOMMATE', UserStatus::getUsername(), $notes, $banner);
+        $activityLog = new HMS_Activity_Log($roommate->getRequestee(), time(), 'ACTIVITY_ADMIN_REMOVED_ROOMMATE', UserStatus::getUsername(), $notes, $requestee->getBannerId());
         $activityLog->save();
 
         \NQ::simple('hms', NotificationView::SUCCESS, 'Roommate group successfully deleted.');

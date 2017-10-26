@@ -52,16 +52,16 @@ class RoommateRejectCommand extends Command
         }
 
         $requestor = StudentFactory::getStudentByUsername($roommate->requestor, $roommate->term);
+        $requestee = StudentFactory::getStudentByUsername($roommate->requestee, $roommate->term);
         $name = $requestor->getFullName();
         $username = $requestor->getUsername();
-
         $roommate->delete();
 
         $activityLog = new HMS_Activity_Log($roommate->requestor,time(), 'ACTIVITY_REJECTED_AS_ROOMMATE', $roommate->requestee,
                                        "$roommate->requestee rejected $roommate->requestor's request", $requestor->getBannerId());
         $activityLog->save();
         $activityLog = new HMS_Activity_Log($roommate->requestee, time(), 'ACTIVITY_REJECTED_AS_ROOMMATE', $roommate->requestor,
-                                       "$roommate->requestee rejected $roommate->requestor's request", $banner);
+                                       "$roommate->requestee rejected $roommate->requestor's request", $requestee->getBannerId());
         $activityLog->save();
 
         // Email both parties

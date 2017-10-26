@@ -210,7 +210,8 @@ class Term
         \PHPWS_Settings::save('hms');
 
         $username = \Current_User::getUsername();
-        $activityLog = new HMS_Activity_Log($username, time(), 'ACTIVITY_CHANGE_ACTIVE_TERM', $username, "Active term set by $username to $term", $banner);
+        $user = StudentFactory::getStudentByUsername($username, $term);
+        $activityLog = new HMS_Activity_Log($username, time(), 'ACTIVITY_CHANGE_ACTIVE_TERM', $username, "Active term set by $username to $term", $user->getBannerId());
         $activityLog->save();
     }
 

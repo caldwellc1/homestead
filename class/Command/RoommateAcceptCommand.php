@@ -72,11 +72,14 @@ class RoommateAcceptCommand extends Command
 
         $roommate->save();
 
+        $requestor = StudentFactory::getStudentByUsername($roommate->requestor, $roommate->term);
+        $requestee = StudentFactory::getStudentByUsername($roommate->requestee, $roommate->term);
+
         $activityLog = new HMS_Activity_Log($roommate->requestor, time(), 'ACTIVITY_ACCEPTED_AS_ROOMMATE', $roommate->requestee,
-                                        "$roommate->requestee accepted request, CAPTCHA: $verified", $banner);
+                                        "$roommate->requestee accepted request, CAPTCHA: $verified", $requestor->getBannerId());
         $activityLog->save();
         $activityLog = new HMS_Activity_Log($roommate->requestee, time(), 'ACTIVITY_ACCEPTED_AS_ROOMMATE', $roommate->requestor,
-                                        "$roommate->requestee accepted request, CAPTCHA: $verified", $banner);
+                                        "$roommate->requestee accepted request, CAPTCHA: $verified", $requestee->getBannerId());
         $activityLog->save();
 
         // Email both parties

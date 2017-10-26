@@ -54,6 +54,7 @@ class LotteryDenyRoommateRequestCommand extends Command {
         }
 
         # Log that it happened
+        //$student = StudentFactory::getStudentByUsername(UserStatus::getUsername(), )
         $activityLog = new HMS_Activity_Log(UserStatus::getUsername(), time(), 'ACTIVITY_LOTTERY_ROOMMATE_DENIED', UserStatus::getUsername(), 'Captcha words: ' . $captcha, $banner);
         $activityLog->save();
 

@@ -192,10 +192,10 @@ class HousingApplication {
         $username = UserStatus::getUsername();
 
         if (isset($username) && !is_null($username)) {
-            $activityLog = new HMS_Activity_Log($this->getUsername(), time(), 'ACTIVITY_SUBMITTED_APPLICATION', $username, 'Term: ' . $this->getTerm(), $banner);
+            $activityLog = new HMS_Activity_Log($this->getUsername(), time(), 'ACTIVITY_SUBMITTED_APPLICATION', $username, 'Term: ' . $this->getTerm(), $this->getBannerId());
             $activityLog->save();
         } else {
-            $activityLog = new HMS_Activity_Log($this->getUsername(), time(), 'ACTIVITY_SUBMITTED_APPLICATION', 'hms', 'Term: ' . $this->getTerm(), $banner);
+            $activityLog = new HMS_Activity_Log($this->getUsername(), time(), 'ACTIVITY_SUBMITTED_APPLICATION', 'hms', 'Term: ' . $this->getTerm(), $this->getBannerId());
             $activityLog->save();
         }
     }
@@ -245,7 +245,8 @@ class HousingApplication {
         }
 
         // Log the fact that the application was sent to banner
-        $activityLog = new HMS_Activity_Log($this->getUsername(), time(), 'ACTIVITY_APPLICATION_REPORTED', UserStatus::getUsername(), NULL, $banner);
+        $student = StudentFactory::getStudentByUsername($this->getUsername(), $this->getTerm());
+        $activityLog = new HMS_Activity_Log($this->getUsername(), time(), 'ACTIVITY_APPLICATION_REPORTED', UserStatus::getUsername(), NULL, $this->getBannerId());
         $activityLog->save();
     }
 
@@ -334,7 +335,7 @@ class HousingApplication {
         $this->cancelled_reason = $reasonKey;
 
         // Log that this happened
-        $activityLog = new HMS_Activity_Log($this->getUsername(), time(), 'ACTIVITY_CANCEL_HOUSING_APPLICATION', \Current_User::getUsername(), Term::toString($this->getTerm()) . ': ' . $reasons[$reasonKey], $banner);
+        $activityLog = new HMS_Activity_Log($this->getUsername(), time(), 'ACTIVITY_CANCEL_HOUSING_APPLICATION', \Current_User::getUsername(), Term::toString($this->getTerm()) . ': ' . $reasons[$reasonKey], $this->getBannerId());
         $activityLog->save();
     }
 

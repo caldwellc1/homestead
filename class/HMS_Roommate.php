@@ -453,9 +453,11 @@ class HMS_Roommate
         }
 
         foreach ($requests as $request) {
-            $activityLog = new HMS_Activity_Log($request->requestor, time(), 'ACTIVITY_AUTO_CANCEL_ROOMMATE_REQ', UserStatus::getUsername(), "$request->requestee: Due to confirmed roommate", $banner);
+            $requestor = StudentFactory::getStudentByUsername($request->requestor, $term);
+            $requestee = StudentFactory::getStudentByUsername($request->requestee, $term);
+            $activityLog = new HMS_Activity_Log($request->requestor, time(), 'ACTIVITY_AUTO_CANCEL_ROOMMATE_REQ', UserStatus::getUsername(), "$request->requestee: Due to confirmed roommate", $requestor->getBannerId());
             $activityLog->save();
-            $activityLog = new HMS_Activity_Log($request->requestee, time(), 'ACTIVITY_AUTO_CANCEL_ROOMMATE_REQ', UserStatus::getUsername(), "$request->requestor: Due to confirmed roommate", $banner);
+            $activityLog = new HMS_Activity_Log($request->requestee, time(), 'ACTIVITY_AUTO_CANCEL_ROOMMATE_REQ', UserStatus::getUsername(), "$request->requestor: Due to confirmed roommate", $requestee->getBannerId());
             $activityLog->save();
             $request->delete();
         }

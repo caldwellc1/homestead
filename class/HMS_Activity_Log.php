@@ -63,12 +63,31 @@ class HMS_Activity_Log{
 
         $db = PdoFactory::getPdoInstance();
         $sql = "INSERT INTO hms_activity_log (user_id, timestamp, activity, actor, notes, banner_id)
-            VALUES (:user, :times, (SELECT hms_activities.id FROM hms_activities WHERE hms_activities.action = :activity), :actor, :notes, :banner)";
+            VALUES (:user, :times, :activity, :actor, :notes, :banner)";
         $sth = $db->prepare($sql);
         $sth->execute(array('user' => $this->get_user_id(), 'times' => $this->get_timestamp(),
-        'activity' => $this->get_activity(), 'actor' => $this->get_actor(), 'notes' => $this->get_notes(), 'banner' => $this->get_banner_id()));
+        'activity' => $this->getActivityID(), 'actor' => $this->get_actor(), 'notes' => $this->get_notes(), 'banner' => $this->get_banner_id()));
 
         return TRUE;
+    }
+
+    /**
+     * Returns the activities id
+     */
+    public function getActivityID(){
+        $db = PdoFactory::getPdoInstance();
+        $sql = "SELECT id
+           FROM hms_activities
+           WHERE action = :activity";
+        $sth = $db->prepare($sql);
+        $sth->execute(array('activity' => $this->get_activity()));
+        $result = $sth->fetchColumn();
+
+        if($result == 0){
+            throw new DatabaseException("Activity not found in table");
+        }
+
+        return $result;
     }
 
     /**

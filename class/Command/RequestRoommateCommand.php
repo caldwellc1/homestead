@@ -79,11 +79,6 @@ class RequestRoommateCommand extends Command
 
         $expirationMsg = " expires on " . date('m/d/Y h:i:s a', $endTime);
 
-        $activityLog = new HMS_Activity_Log($requestee, time(), 'ACTIVITY_REQUESTED_AS_ROOMMATE', $requestor, "$requestor requested $requestee" . $expirationMsg, $banner);
-        $activityLog->save();
-        $activityLog = new HMS_Activity_Log($requestor, time(), 'ACTIVITY_REQUESTED_AS_ROOMMATE', $requestee, "$requestor requested $requestee" . $expirationMsg, $banner);
-        $activityLog->save();
-
         // Email both parties
         HMS_Email::send_request_emails($request);
 
@@ -91,6 +86,12 @@ class RequestRoommateCommand extends Command
         $student = StudentFactory::getStudentByUsername($requestee, $term);
         $name = $student->getName();
         $fname = $student->getFirstName();
+        $studentTwo = StudentFactory::getStudentByUsername($requestor, $term);
+        $activityLog = new HMS_Activity_Log($requestee, time(), 'ACTIVITY_REQUESTED_AS_ROOMMATE', $requestor, "$requestor requested $requestee" . $expirationMsg, $student->getBannerId());
+        $activityLog->save();
+        $activityLog = new HMS_Activity_Log($requestor, time(), 'ACTIVITY_REQUESTED_AS_ROOMMATE', $requestee, "$requestor requested $requestee" . $expirationMsg, $studentTwo->getBannerId());
+        $activityLog->save();
+
         \NQ::simple('hms', NotificationView::SUCCESS, "You have requested $name to be your roommate.  $fname has been emailed, and will need to log into HMS and approve your roommate request.");
 
         $cmd = CommandFactory::getCommand('ShowStudentMenu');

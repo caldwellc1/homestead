@@ -52,14 +52,15 @@ class RemoveDenyRlcAssignmentCommand extends Command
             echo json_encode(array("message" => "Could not find an RLC assignment with that id.", "type" => "error"));
         }
 
-        $activityLog = new HMS_Activity_Log($rlcApp->getUsername(), time(), 'ACTIVITY_RLC_UNASSIGN', \Current_User::getUsername(), "Removed from $rlcName", $banner);
+        $student = StudentFactory::getStudentByUsername($rlcApp->getUsername(), $rlcApp->getTerm());
+        $activityLog = new HMS_Activity_Log($rlcApp->getUsername(), time(), 'ACTIVITY_RLC_UNASSIGN', \Current_User::getUsername(), "Removed from $rlcName", $student->getBannerId());
         $activityLog->save();
 
         // Deny application
         $rlcApp->denied = 1;
         $rlcApp->save();
 
-        $activityLog = new HMS_Activity_Log($rlcApp->getUsername(), time(), 'ACTIVITY_DENIED_RLC_APPLICATION', \Current_User::getUsername(), 'RLC Application Denied', $banner);
+        $activityLog = new HMS_Activity_Log($rlcApp->getUsername(), time(), 'ACTIVITY_DENIED_RLC_APPLICATION', \Current_User::getUsername(), 'RLC Application Denied', $student->getBannerId());
         $activityLog->save();
 
         echo json_encode(array("message" => "Removed from RLC, student's RLC application set to denied", "type" => "success"));

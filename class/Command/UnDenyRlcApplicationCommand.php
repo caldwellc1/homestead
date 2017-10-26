@@ -31,7 +31,8 @@ class UnDenyRlcApplicationCommand extends Command {
         $app->denied = 0;
         $app->save();
 
-        $activityLog = new HMS_Activity_Log($app->username, time(), 'ACTIVITY_UNDENIED_RLC_APPLICATION', UserStatus::getUsername(), "Application un-denied", $banner);
+        $student = StudentFactory::getStudentByUsername($app->username, $app->getTerm());
+        $activityLog = new HMS_Activity_Log($app->username, time(), 'ACTIVITY_UNDENIED_RLC_APPLICATION', UserStatus::getUsername(), "Application un-denied", $student->getBannerId());
         $activityLog->save();
 
         \NQ::simple('hms', NotificationView::SUCCESS, 'Application un-denied.');

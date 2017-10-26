@@ -55,12 +55,13 @@ class RoommateRequestCancelCommand extends Command
         $roommate->delete();
 
         $other = StudentFactory::getStudentByUsername($roommate->get_other_guy($username), $roommate->term);
+        $student = StudentFactory::getStudentByUsername($username, $roommate->term);
 
         $activityLog = new HMS_Activity_Log($other->getUsername(), time(), 'ACTIVITY_STUDENT_CANCELLED_ROOMMATE_REQUEST',
-                                       $username, "$username cancelled roommate request", $banner);
+                                       $username, "$username cancelled roommate request", $other->getBannerId());
         $activityLog->save();
         $activityLog = new HMS_Activity_Log($username, time(), 'ACTIVITY_STUDENT_CANCELLED_ROOMMATE_REQUEST',
-                                       $other->getUsername(), "$username cancelled roommate request", $banner);
+                                       $other->getUsername(), "$username cancelled roommate request", $student->getBannerId());
         $activityLog->save();
 
         // Email both parties
