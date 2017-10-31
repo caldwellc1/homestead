@@ -42,6 +42,14 @@ class ActivityLogPager extends View {
      */
     public function show()
     {
+        $tpl = array();
+
+        $tpl['SOURCE_HTTP'] = PHPWS_SOURCE_HTTP;
+        $tpl['vendor_bundle'] = AssetResolver::resolveJsPath('assets.json', 'vendor');
+        $tpl['entry_bundle'] = AssetResolver::resolveJsPath('assets.json', 'activityLog');
+
+        return \PHPWS_Template::process($tpl, 'hms', 'admin/activity_log_pager.tpl');
+
         $pct = ($this->exact == TRUE) ? '' : '%';
 
         if(!empty($this->actor) && !empty($this->actee) && $this->actor == $this->actee){

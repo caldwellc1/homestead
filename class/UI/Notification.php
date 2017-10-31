@@ -6,6 +6,7 @@ use \Homestead\HMS_Residence_Hall;
 use \Homestead\HMS_Term;
 use \Homestead\HMS_Activity_Log;
 use \Homestead\HMS_Email;
+use \Homestead\StudentFactory;
 
 /**
   * Interface for sending hall emails.
@@ -183,11 +184,12 @@ class Notification {
         $body       = $_REQUEST['body'];
 
         // Log that this is happening
+        //$student = StudentFactory::getStudentByUsername(\Current_User::getUsername(), $term);
         if($from == FROM_ADDRESS){
-            $activityLog = new HMS_Activity_Log(Current_User::getUsername(), time(), 'ACTIVITY_ANON_NOTIFICATION_SENT', Current_User::getUsername(), NULL, $banner);
+            $activityLog = new HMS_Activity_Log(\Current_User::getUsername(), time(), 'ACTIVITY_ANON_NOTIFICATION_SENT', \Current_User::getUsername(), NULL, $banner);
             $activityLog->save();
         }else{
-            $activityLog = new HMS_Activity_Log(Current_User::getUsername(), time(), 'ACTIVITY_NOTIFICATION_SENT', Current_User::getUsername(), NULL, $banner);
+            $activityLog = new HMS_Activity_Log(\Current_User::getUsername(), time(), 'ACTIVITY_NOTIFICATION_SENT', \Current_User::getUsername(), NULL, $banner);
             $activityLog->save();
         }
 
@@ -205,10 +207,10 @@ class Notification {
                     }
                 }
                 if($from == FROM_ADDRESS){
-                    $activityLog = new HMS_Activity_Log(Current_User::getUsername(), time(), 'ACTIVITY_HALL_NOTIFIED_ANONYMOUSLY', Current_User::getUsername(), $hall->hall_name, $banner);
+                    $activityLog = new HMS_Activity_Log(\Current_User::getUsername(), time(), 'ACTIVITY_HALL_NOTIFIED_ANONYMOUSLY', \Current_User::getUsername(), $hall->hall_name, $banner);
                     $activityLog->save();
                 } else {
-                    $activityLog = new HMS_Activity_Log(Current_User::getUsername(), time(), 'ACTIVITY_HALL_NOTIFIED', Current_User::getUsername(), $hall->hall_name, $banner);
+                    $activityLog = new HMS_Activity_Log(\Current_User::getUsername(), time(), 'ACTIVITY_HALL_NOTIFIED', \Current_User::getUsername(), $hall->hall_name, $banner);
                     $activityLog->save();
                 }
             }
@@ -225,10 +227,10 @@ class Notification {
                 }
             }
             if($from == FROM_ADDRESS){
-                $activityLog = new HMS_Activity_Log(Current_User::getUsername(), time(), 'ACTIVITY_HALL_NOTIFIED_ANONYMOUSLY', Current_User::getUsername(), $hall->hall_name, $banner);
+                $activityLog = new HMS_Activity_Log(\Current_User::getUsername(), time(), 'ACTIVITY_HALL_NOTIFIED_ANONYMOUSLY', \Current_User::getUsername(), $hall->hall_name, $banner);
                 $activityLog->save();
             } else {
-                $activityLog = new HMS_Activity_Log(Current_User::getUsername(), time(), 'ACTIVITY_HALL_NOTIFIED', Current_User::getUsername(), $hall->hall_name, $banner);
+                $activityLog = new HMS_Activity_Log(\Current_User::getUsername(), time(), 'ACTIVITY_HALL_NOTIFIED', \Current_User::getUsername(), $hall->hall_name, $banner);
                 $activityLog->save();
             }
         }

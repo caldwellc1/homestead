@@ -1,76 +1,64 @@
-const ReactDataGrid = require('react-data-grid');
-const { Toolbar, Filters: { NumericFilter, AutoCompleteFilter, MultiSelectFilter, SingleSelectFilter }, Data: { Selectors } } = require('react-data-grid-addons');
-const exampleWrapper = require('../components/exampleWrapper');
-const React = require('react');
+import React from 'react';
+import ReactDOM from 'react-dom';
+import $ from 'jquery';
+import ReactDataGrid from 'react-data-grid';
 
-class Example extends React.Component {
+class LogTable extends React.Component {
   constructor(props, context) {
     super(props, context);
     this._columns = [
-      {
-        key: 'user_id',
-        name: 'Actee',
-        width: 80
-      },
-      {
-        key: 'activity',
-        name: 'Activity',
-        filterable: true,
-        filterRenderer: MultiSelectFilter,
-        sortable: true
-      },
-      {
-        key: 'actor',
-        name: 'Actor',
-        filterable: true,
-        sortable: true
-      },
-      {
-        key: 'banner_id',
-        name: 'Banner ID',
-        filterable: true,
-        filterRenderer: NumericFilter,
-        sortable: true
-      },
-      {
-        key: 'timestamp',
-        name: 'Date',
-        filterable: true,
-        sortable: true
-      },
-      {
-        key: 'notes',
-        name: 'Notes',
-        filterable: true,
-        sortable: true
-      }
+      {key: 'user_id', name: 'Actee', width: 100, sortable: true},
+      {key: 'timestamp', name: 'Date', width: 100},
+      {key: 'description', name: 'Activity', resizable: true},
+      {key: 'actor', name: 'Actor', width: 100},
+      {key: 'notes', name: 'Notes', resizable: true},
+      {key: 'banner_id', name: 'Banner ID', width: 100}
     ];
-
-    this.state = { rows: {}, filters: {}, sortColumn: null, sortDirection: null };
+    this.state = { originalRows: [], rows: [], filters: {}, sortColumn: null, sortDirection: null };
+    this.getRows()
+    this.rowGetter = this.rowGetter.bind(this)
+  }
+  getRows() {
+      // Sends an ajax request to get the activity data
+      $.ajax({
+          url: 'index.php?module=hms&action=AjaxActivityLog',
+          type: 'GET',
+          dataType: 'json',
+          success: function(data) {
+              this.setState({originalRows: data});
+              this.setState({rows: this.state.originalRows.slice(0)})
+          }.bind(this),
+          error: function(xhr, status, err) {
+              alert("Failed to grab displayed data.")
+              console.error(this.props.url, status, err.toString());
+          }.bind(this)
+      });
   }
 
-  getDate = (start, end) => {
+  rowGetter(i){
+      return this.state.rows[i]
+  }
 
+  getSize(){
+    return this.state.rows.length
+  }
+
+  handleGridSort(sortColumn, sortDirection){
+      console.log(sortColumn, sortDirection)
+    const comparer = (a, b) => {
+      if (sortDirection === 'ASC') {
+        return (a[sortColumn] > b[sortColumn]) ? 1 : -1;
+      } else if (sortDirection === 'DESC') {
+        return (a[sortColumn] < b[sortColumn]) ? 1 : -1;
+      }
+    };
+
+    const rows = sortDirection === 'NONE' ? this.state.originalRows.slice(0) : this.state.rows.sort(comparer);
+
+    this.setState({rows: rows});
   };
 
-  getRows = () => {
-    return Selectors.getRows(this.state);
-  };
-
-  getSize = () => {
-    return this.getRows().length;
-  };
-
-  rowGetter = (rowIdx) => {
-    const rows = this.getRows();
-    return rows[rowIdx];
-  };
-
-  handleGridSort = (sortColumn, sortDirection) => {
-    this.setState({ sortColumn: sortColumn, sortDirection: sortDirection });
-  };
-
-  handleFilterChange = (filter) => {
+  handleFilterChange(filter){
     let newFilters = Object.assign({}, this.state.filters);
     if (filter.filterTerm) {
       newFilters[filter.column.key] = filter;
@@ -79,16 +67,16 @@ class Example extends React.Component {
     }
 
     this.setState({ filters: newFilters });
-  };
-  
-  getValidFilterValues = (columnId) => {
+  }
+
+  getValidFilterValues(columnId){
       let values = this.state.rows.map(r => r[columnId]);
       return values.filter((item, i, a) => { return i === a.indexOf(item); });
-    };
+  }
 
-  onClearFilters = () => {
+  onClearFilters(){
     this.setState({ filters: {} });
-  };
+  }
 
   render() {
     return  (
@@ -98,17 +86,13 @@ class Example extends React.Component {
         columns={this._columns}
         rowGetter={this.rowGetter}
         rowsCount={this.getSize()}
-        minHeight={500}
-        toolbar={<Toolbar enableFilter={true}/>}
-        onAddFilter={this.handleFilterChange}
-        onClearFilters={this.onClearFilters} />);
+        minHeight={700}
+        //toolbar={<Toolbar enableFilter={true}/>}
+        //onAddFilter={this.handleFilterChange}
+        //onClearFilters={this.onClearFilters}
+        />
+    );
   }
 }
 
-module.exports = exampleWrapper({
-  WrappedComponent: Example,
-  exampleName: 'Filterable Sortable Columns Example',
-  exampleDescription,
-  examplePath: './scripts/example16-filterable-sortable-grid.js',
-  examplePlaygroundLink: undefined
-});
+ReactDOM.render(<LogTable />, document.getElementById('activity-log-table'));

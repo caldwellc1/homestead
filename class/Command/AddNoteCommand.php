@@ -4,6 +4,7 @@ namespace Homestead\Command;
 
 use \Homestead\HMS_Activity_Log;
 use \Homestead\UserStatus;
+use \Homestead\StudentFactory;
 
 class AddNoteCommand extends Command {
 
@@ -58,7 +59,7 @@ class AddNoteCommand extends Command {
         if(!isset($banner) || empty($banner)){
             throw new InvalidArgumentException('Missing banner id.');
         }
-
+        //$student = StudentFactory::getStudentByUsername($username, $term);
         $activityLog = new HMS_Activity_Log($username, time(), 'ACTIVITY_ADD_NOTE', UserStatus::getUsername(), $note, $banner);
         $activityLog->save();
 

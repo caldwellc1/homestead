@@ -83,9 +83,22 @@ class HMS_Activity_Log{
         $sth->execute(array('activity' => $this->get_activity()));
         $result = $sth->fetchColumn();
 
-        if($result == 0){
+        if(sizeof($result) == 0){
             throw new DatabaseException("Activity not found in table");
         }
+
+        return $result;
+    }
+
+    public function getAllLogs(){
+        $db = PdoFactory::getPdoInstance();
+        $sql = "SELECT user_id, timestamp, actor, notes, banner_id, description
+           FROM hms_activity_log
+           JOIN hms_activities
+           ON hms_activity_log.activity = hms_activities.id";
+        $sth = $db->prepare($sql);
+        $sth->execute();
+        $result = $sth->fetchAll(\PDO::FETCH_ASSOC);
 
         return $result;
     }

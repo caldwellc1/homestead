@@ -10,6 +10,7 @@ module.exports = {
       roomDamages: JS_DIR + '/RoomDamages/RoomDamages.jsx',
       studentRoomDamage: JS_DIR + '/StudentAddRoomDamages/roomDamage.jsx',
       emailLogView: JS_DIR + '/emailLogView/emailLogView.jsx',
+      activityLog: JS_DIR + '/activity_log/ActivityLogTable.jsx',
       vendor: ['jquery', 'react', 'react-dom', 'react-bootstrap']
     }
 }

@@ -14,8 +14,15 @@
 </div>
 <!-- END listrows -->
 
+<div class="container">
+    <div id="activity-log-table"></div>
+</div>
+
 <div class="text-center">
     {TOTAL_ROWS}<br />
     {PAGE_LABEL} {PAGES}<br />
     {LIMIT_LABEL} {LIMITS}
 </div>
+
+<script type="text/javascript" src="{vendor_bundle}"></script>
+<script type="text/javascript" src="{entry_bundle}"></script>
