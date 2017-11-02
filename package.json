@@ -19,7 +19,8 @@
   "dependencies": {
     "corejs-typeahead": "^1.1.1",
     "flot": "^0.8.0-alpha",
-    "react-data-grid": "^2.0.70"
+    "react-data-grid": "^2.0.70",
+    "react-data-grid-addons": "^2.0.71"
   },
   "devDependencies": {
     "assets-webpack-plugin": "^3.4.0",

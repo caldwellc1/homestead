@@ -36,7 +36,6 @@ class ActivityLogView extends View {
         $tags = array();
 
         $tags['CONTENT'] = $this->pager->show();
-        $tags['FILTERS'] = ActivityLogView::showFilters($_REQUEST);
 
         \Layout::addPageTitle("Activity Log");
 

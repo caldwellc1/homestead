@@ -58,6 +58,7 @@ class HMS_Admin
             $names[1] = trim($names[1]);
 
             # Start logging activities
+            $banner = StudentFactory::getStudentByUsername(\Current_User::getUsername(), Term::getTerm());
             $notes = "Attempted to update username: ".trim($names[0])."=>".trim($names[1]);
             $activityLog = new HMS_Activity_Log(trim($names[0]), time(), 'ACTIVITY_USERNAME_UPDATED', \Current_User::getUsername(), $notes, $banner);
             $activityLog->save();
@@ -82,6 +83,7 @@ class HMS_Admin
 
                     # Log Successful application update
                     $notes = "Application Updated";
+                    $banner = StudentFactory::getStudentByUsername(\Current_User::getUsername(), Term::getTerm());
                     $activityLog = new HMS_Activity_Log(trim($names[1]), time(), 'ACTIVITY_APPLICATION_UPDATED', \Current_User::getUsername(), $notes, $banner);
                     $activityLog->save();
                 }
@@ -102,6 +104,7 @@ class HMS_Admin
                     $tpl['status'][] = array('USERNAME'=>$names[0], 'MESSAGE' => "$rows_affected assignment records updated.");
 
                     $notes = "Assignments Updated";
+                    $banner = StudentFactory::getStudentByUsername(\Current_User::getUsername(), Term::getTerm());
                     $activityLog = new HMS_Activity_Log(trim($names[1]), time(), 'ACTIVITY_ASSIGNMENTS_UPDATED', \Current_User::getUsername(), $notes, $banner);
                     $activityLog->save();
                 }
@@ -122,6 +125,7 @@ class HMS_Admin
                     $tpl['status'][] = array('USERNAME'=>$names[0], 'MESSAGE' => "$rows_affected banner queue records updated.");
 
                     $notes = "Banner Queue Updated";
+                    $banner = StudentFactory::getStudentByUsername(\Current_User::getUsername(), Term::getTerm());
                     $activityLog = new HMS_Activity_Log(trim($names[1]), time(), 'ACTIVITY_BANNER_QUEUE_UPDATED', \Current_User::getUsername(), $notes, $banner);
                     $activityLog->save();
                 }
@@ -142,6 +146,7 @@ class HMS_Admin
                     $tpl['status'][] = array('USERNAME'=>$names[0], 'MESSAGE' => "$rows_affected roommate requestor records updated.");
 
                     $notes = "Roommates Updated";
+                    $banner = StudentFactory::getStudentByUsername(\Current_User::getUsername(), Term::getTerm());
                     $activityLog = new HMS_Activity_Log(trim($names[1]), time(), 'ACTIVITY_ROOMMATES_UPDATED', \Current_User::getUsername(), $notes, $banner);
                     $activityLog->save();
                 }
@@ -161,6 +166,7 @@ class HMS_Admin
                     $tpl['status'][] = array('USERNAME'=>$names[0], 'MESSAGE' => "$rows_affected roommate requestee records updated.");
 
                     $notes = "Roommate Requests Updated";
+                    $banner = StudentFactory::getStudentByUsername(\Current_User::getUsername(), Term::getTerm());
                     $activityLog = new HMS_Activity_Log(trim($names[1]), time(), 'ACTIVITY_ROOMMATE_REQUESTS_UPDATED', \Current_User::getUsername(), $notes, $banner);
                     $activityLog->save();
                 }
@@ -181,6 +187,7 @@ class HMS_Admin
                     $tpl['status'][] = array('USERNAME'=>$names[0], 'MESSAGE' => "$rows_affected RLC records updated.");
 
                     $notes = "RLCs Updated";
+                    $banner = StudentFactory::getStudentByUsername(\Current_User::getUsername(), Term::getTerm());
                     $activityLog = new HMS_Activity_Log(trim($names[1]), trim(), 'ACTIVITY_RLC_APPLICATION_UPDATED', \Current_User::getUsername(), $notes, $banner);
                     $activityLog->save();
                 }

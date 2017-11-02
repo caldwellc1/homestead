@@ -40,11 +40,13 @@ class ActivityLogPager extends View {
      * (unsortable with unchangeable limits) that has a link to the main
      * activity log, or the regular dynamic log.
      */
-    public function show()
+    public function show($banner = NULL, $notes = NULL)
     {
         $tpl = array();
 
         $tpl['SOURCE_HTTP'] = PHPWS_SOURCE_HTTP;
+        $tpl['STUDENT'] = $banner;
+        $tpl['NOTES'] = $notes;
         $tpl['vendor_bundle'] = AssetResolver::resolveJsPath('assets.json', 'vendor');
         $tpl['entry_bundle'] = AssetResolver::resolveJsPath('assets.json', 'activityLog');
 

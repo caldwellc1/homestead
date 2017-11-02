@@ -80,8 +80,11 @@ class LotteryProcess {
 
     public function sendInvites()
     {
+
+        /* TODO: If going to log this, then fix with banner id
         $activityLog = new HMS_Activity_Log('hms', time(), 'ACTIVITY_LOTTERY_EXECUTED', 'hms', NULL, $banner);
-        $activityLog->save();
+        $activityLog->save();*/
+        
         $this->output[] = "Lottery system invoked on " . date("d M, Y @ g:i:s", $this->now) . " ($this->now)";
 
         /**
