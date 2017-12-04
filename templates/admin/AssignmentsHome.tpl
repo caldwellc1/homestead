@@ -9,6 +9,7 @@
     <li><a href="{ROOM_CHANGE_URI}">Room Change Requests</a></li>
     <li role="separator" class="divider"></li>
     <li><a href="{ASSIGN_BY_FLOOR_URI}">Bulk Assign by Floor</a></li>
+    <li><a href="{GROUP_ASSIGN_URI}">Group Assign</a></li>
     <li><a href="{AUTO_ASSIGN_URI}">Auto-assign</a></li>
     <li><a href="{WITHDRAWN_SEARCH_URI}">Withdrawn Search</a></li>
   </ul>

@@ -41,6 +41,11 @@ class ShowAssignmentsHomeCommand extends Command {
             $tpl['ASSIGN_BY_FLOOR_URI'] = $floorAssignCmd->getUri();
         }
 
+        if(\Current_User::allow('hms', 'group_assign')){
+            $groupAssignCmd = CommandFactory::getCommand('GroupAssign');
+            $tpl['GROUP_ASSIGN_URI'] = $groupAssignCmd->getUri();
+        }
+
         if(\Current_User::allow('hms', 'autoassign')) {
             $autoAssignCmd = CommandFactory::getCommand('StartAutoassign');
             $tpl['AUTO_ASSIGN_URI'] = $autoAssignCmd->getUri();

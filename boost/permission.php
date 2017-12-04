@@ -91,6 +91,7 @@
     $permissions['autoassign']              = _('Run the auto-assigner');
     $permissions['assignment_notify']       = _('Send assignment notifications');
     $permissions['assign_by_floor']         = _('Assign Students by Floor');
+    $Permissions['group_assign']            =_('Assign Students by Group');
     $permissions['coed_assignment']         = _('Assign to Co-ed rooms');
 
     /*************
