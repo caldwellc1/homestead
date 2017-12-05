@@ -4,7 +4,7 @@ var JS_DIR = path.resolve(__dirname, 'javascript');
 module.exports = {
     entryPoints: {
       assignByFloor: JS_DIR + '/AssignByFloor/AssignByFloor.jsx',
-      groupAssign: JS_DIR + '/GroupAssign/GroupAssing.jsx',
+      groupAssign: JS_DIR + '/GroupAssign/GroupAssign.jsx',
       checkOut: JS_DIR + '/CheckOut/CheckOut.jsx',
       damageAssessment: JS_DIR + '/damageAssessment/DamageAssessment.jsx',
       rlcMembersList: JS_DIR + '/rlcMembersList/rlcMembersList.jsx',
