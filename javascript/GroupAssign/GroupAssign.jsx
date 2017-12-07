@@ -10,6 +10,7 @@ class GroupAssign extends React.Component{
 
         this.state = {
             hallList: [],
+            groups:[],
             assignmentOptions: [],
             currentAssignmentType: 0
         };
@@ -44,6 +45,14 @@ class GroupAssign extends React.Component{
                 });
 
             }.bind(this));
+            $.getJSON('index.php', {
+                module: 'hms',
+                action: 'GetRlcList'
+            }, function(data){
+                this.setState({
+                    groups: data
+                });
+            }.bind(this));
         }.bind(this));
     }
 
@@ -51,7 +60,7 @@ class GroupAssign extends React.Component{
         return (
             <div>
                 <Options {...this.state} updateAssignmentType={this.updateAssignmentType} />
-                <Halls hallList={this.state.hallList}  assignmentType={this.state.currentAssignmentType} />
+                <Halls hallList={this.state.hallList}  assignmentType={this.state.currentAssignmentType} groups={this.state.groups}/>
             </div>
         );
     }
@@ -118,6 +127,7 @@ class Halls extends React.Component{
 
         this.state =  {
             hallName: 'Choose a hall',
+            floorName: '',
             selected: false,
             icon: 'fa-building-o',
             floors: [],
@@ -126,6 +136,10 @@ class Halls extends React.Component{
         };
         this.loadFloors = this.loadFloors.bind(this);
         this.updateHall = this.updateHall.bind(this);
+        this.onChildChanged = this.onChildChanged.bind(this);
+    }
+    onChildChanged(newFloor){
+        this.setState({floorName: newFloor})
     }
     loadFloors(hallId) {
         //this.getInitialState();
@@ -154,7 +168,8 @@ class Halls extends React.Component{
         return (
             <div>
                 <DropDown floorList={this.state.floorList} icon={this.state.icon} listing={this.props.hallList} onClick={this.updateHall} selected={this.state.selected} title={this.state.hallName}/>
-                <Floors key={this.state.timestamp} floorDisabled={this.state.floorDisabled} floorList={this.state.floors} assignmentType={this.props.assignmentType} hall={this.state.hallName}/>
+                <Floors key={this.state.timestamp} floorDisabled={this.state.floorDisabled} floorList={this.state.floors} assignmentType={this.props.assignmentType} hall={this.state.hallName} callbackParent={(newState)=>this.onChildChanged(newState)}/>
+                <Groups groupList={this.props.groups} hallSelected={this.state.hallName} floorSelected={this.state.floorName}/>
             </div>
         );
     }
@@ -168,7 +183,6 @@ class Floors extends React.Component{
             selected: false,
             floorName: 'Choose a floor',
             icon: 'fa-list',
-            rooms: [],
             displayStatus: 'empty',
             mounted: false
         };
@@ -190,12 +204,12 @@ class Floors extends React.Component{
         this.setState({
             displayStatus: 'loading'
         });
+        this.props.callbackParent(this.state.floorName)
     }
     render() {
         return (
             <div>
                 <DropDown disabled={this.props.floorDisabled} icon={this.state.icon} listing={this.props.floorList} onClick={this.updateFloor} selected={this.state.selected} title={this.state.floorName}/>
-                <Groups hallSelected={this.props.hallName} floorSelected={this.state.floorName}/>
             </div>
         );
     }
@@ -208,11 +222,60 @@ Floors.propTypes = {
 Floors.defaultProps ={
     floorList: []
 }
+
+class Groups extends React.Component{
+    constructor(props){
+        super(props);
+
+        this.state =  {
+            groupName: 'Choose a group',
+            selected: false,
+            icon: 'fa-user-circle-o',
+            timestamp: Date.now(),
+        };
+        this.updateGroup = this.updateGroup.bind(this);
+        this.submit = this.submit.bind(this);
+    }
+    updateGroup(index) {
+        this.setState({
+            groupName: this.props.groupList[index].title,
+            selected: true,
+            timestamp: Date.now()
+        });
+    }
+    submit(){
+        $.ajax({
+            url: 'index.php?module=hms&action=AssignmentGroup',
+            method: 'POST',
+            dataType: 'text',
+            data: {groupName: this.state.groupName,
+            hallName: this.props.hallList,
+            floorName: this.props.floorList,
+            reason: this.props.assignmentType},
+            success: function() {
+                //load next page
+            },
+            error: function(xhr, status, err) {
+                alert("Failed to Submit.")
+                console.error(this.props.url, status, err.toString());
+            }.bind(this)
+        });
+    }
+    render() {
+        var disabled = this.state.selected && this.props.hallSelected !== 'Choose a hall' ? false : true;
+        var buttonClassName = this.state.selected && this.props.hallSelected !== 'Choose a hall' ? 'btn-success' : 'btn-default';
+        return (
+            <div>
+                <DropDown icon={this.state.icon} listing={this.props.groupList} onClick={this.updateGroup} selected={this.state.selected} title={this.state.groupName} disabled={false}/>
+            <br/><Button onClick={this.submit} disabled={disabled} className={buttonClassName}>Submit</Button>
+            </div>
+        );
+    }
+}
 class DropDown extends React.Component{
     render() {
         var buttonClass = this.props.selected ? 'btn-success' : 'btn-default';
         var buttonDisabled = this.props.disabled ? 'disabled' : '';
-        //var listing = this.props.listing;
         return (
             <div className="btn-group">
                 <div className="btn-group" role="group">
@@ -254,54 +317,8 @@ class DropDownChoice extends React.Component{
     render() {
         return (
             <li onClick={this.props.onClick}>
-                <a style={{cursor: 'pointer', fontSize: '1.3em'}}>{this.state.groupName}</a>
+                <a style={{cursor: 'pointer', fontSize: '1.3em'}}>{this.props.title}</a>
             </li>
-        );
-    }
-}
-class Groups extends React.Component{
-    constructor(props){
-        super(props);
-
-        this.state =  {
-            groupName: 'Choose a group',
-            selected: false,
-            icon: 'fa-user-circle-o',
-            groups: [],
-            timestamp: Date.now(),
-            loading: true
-        };
-        this.componentDidMount = this.componentDidMount.bind(this);
-        this.updateGroup = this.updateGroup.bind(this);
-        this.submit = this.submit.bind(this);
-    }
-    componentDidMount() {
-      fetch('index.php?module=hms&action=GetRlcList', {credentials: 'same-origin'})
-        .then(res => res.json())
-        .then(
-          groups => this.setState({ loading: true, groups: groups }),
-          error => this.setState({ loading: false, error })
-        );
-    }
-    updateGroup(index) {
-        this.setState({
-            groupName: this.props.group[index].title,
-            selected: true,
-            timestamp: Date.now()
-        });
-    }
-    submit(){
-
-    }
-    render() {
-        var disabled = this.state.selected & this.props.hallName !== null ? false : true;
-        var buttonClassName = this.state.selected ? 'btn-success' : 'btn-default';
-
-        return (
-            <div>
-                <DropDown icon={this.state.icon} listing={this.state.groups} onClick={this.updateGroup} selected={this.state.selected} title={this.props.title}/>
-                <Button onClick={this.submit} disabled={disabled} className={buttonClassName}>Submit</Button>
-            </div>
         );
     }
 }

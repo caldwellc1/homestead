@@ -2,8 +2,7 @@
 
 namespace Homestead\Command;
 
-use Homestead\Term;
-use Homestead\RlcFactory;
+use Homestead\PdoFactory;
 
 class GetRlcListCommand extends Command {
 
@@ -13,9 +12,10 @@ class GetRlcListCommand extends Command {
 
     public function execute(CommandContext $context)
     {
-        $rlcs = RlcFactory::getRlcList(Term::getSelectedTerm());
-
-        echo json_encode($rlcs);
-        exit;
+        $pdo = PdoFactory::getPdoInstance();
+        $prep = $pdo->prepare("select id, community_name as title from hms_learning_communities order by community_name");
+        $prep->execute();
+        $rlc = $prep->fetchAll(\PDO::FETCH_ASSOC);
+        $context->setContent(json_encode($rlc));
     }
 }

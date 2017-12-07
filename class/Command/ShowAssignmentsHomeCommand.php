@@ -42,7 +42,7 @@ class ShowAssignmentsHomeCommand extends Command {
         }
 
         if(\Current_User::allow('hms', 'group_assign')){
-            $groupAssignCmd = CommandFactory::getCommand('GroupAssign');
+            $groupAssignCmd = CommandFactory::getCommand('GroupAssignBanner');
             $tpl['GROUP_ASSIGN_URI'] = $groupAssignCmd->getUri();
         }
 
