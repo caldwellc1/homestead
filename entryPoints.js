@@ -5,6 +5,7 @@ module.exports = {
     entryPoints: {
       assignByFloor: JS_DIR + '/AssignByFloor/AssignByFloor.jsx',
       groupAssign: JS_DIR + '/GroupAssign/GroupAssign.jsx',
+      groupAssignList: JS_DIR + '/GroupAssign/GroupAssignList.jsx',
       checkOut: JS_DIR + '/CheckOut/CheckOut.jsx',
       damageAssessment: JS_DIR + '/damageAssessment/DamageAssessment.jsx',
       rlcMembersList: JS_DIR + '/rlcMembersList/rlcMembersList.jsx',

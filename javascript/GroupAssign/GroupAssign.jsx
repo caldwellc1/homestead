@@ -169,7 +169,7 @@ class Halls extends React.Component{
             <div>
                 <DropDown floorList={this.state.floorList} icon={this.state.icon} listing={this.props.hallList} onClick={this.updateHall} selected={this.state.selected} title={this.state.hallName}/>
                 <Floors key={this.state.timestamp} floorDisabled={this.state.floorDisabled} floorList={this.state.floors} assignmentType={this.props.assignmentType} hall={this.state.hallName} callbackParent={(newState)=>this.onChildChanged(newState)}/>
-                <Groups groupList={this.props.groups} hallSelected={this.state.hallName} floorSelected={this.state.floorName}/>
+                <Groups groupList={this.props.groups} hallSelected={this.state.hallName} floorSelected={this.state.floorName} assignmentType={this.props.assignmentType}/>
             </div>
         );
     }
@@ -245,7 +245,7 @@ class Groups extends React.Component{
     }
     submit(){
         $.ajax({
-            url: 'index.php?module=hms&action=AssignmentGroup',
+            url: 'index.php?module=hms&action=AssignmentGroupList',
             method: 'POST',
             dataType: 'text',
             data: {groupName: this.state.groupName,
@@ -267,7 +267,7 @@ class Groups extends React.Component{
         return (
             <div>
                 <DropDown icon={this.state.icon} listing={this.props.groupList} onClick={this.updateGroup} selected={this.state.selected} title={this.state.groupName} disabled={false}/>
-            <br/><Button onClick={this.submit} disabled={disabled} className={buttonClassName}>Submit</Button>
+            <br/><Button href={'index.php?module=hms&action=AssignmentGroupList'} onClick={this.submit} disabled={disabled} className={buttonClassName}>Submit</Button>
             </div>
         );
     }
