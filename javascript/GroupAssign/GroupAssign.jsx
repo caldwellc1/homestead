@@ -204,7 +204,7 @@ class Floors extends React.Component{
         this.setState({
             displayStatus: 'loading'
         });
-        this.props.callbackParent(this.state.floorName)
+        this.props.callbackParent(this.props.floorList[index].title)
     }
     render() {
         return (
@@ -245,12 +245,12 @@ class Groups extends React.Component{
     }
     submit(){
         $.ajax({
-            url: 'index.php?module=hms&action=AssignmentGroupList',
+            url: 'index.php?module=hms&action=AssignmentGroupList&ajax=true',
             method: 'POST',
             dataType: 'text',
             data: {groupName: this.state.groupName,
-            hallName: this.props.hallList,
-            floorName: this.props.floorList,
+            hallName: this.props.hallSelected,
+            floorName: this.props.floorSelected,
             reason: this.props.assignmentType},
             success: function() {
                 //load next page
@@ -262,12 +262,12 @@ class Groups extends React.Component{
         });
     }
     render() {
-        var disabled = this.state.selected && this.props.hallSelected !== 'Choose a hall' ? false : true;
-        var buttonClassName = this.state.selected && this.props.hallSelected !== 'Choose a hall' ? 'btn-success' : 'btn-default';
+        var disabled = this.state.selected || this.props.hallSelected !== 'Choose a hall' ? false : true;
+        var buttonClassName = this.state.selected || this.props.hallSelected !== 'Choose a hall' ? 'btn-success' : 'btn-default';
         return (
             <div>
                 <DropDown icon={this.state.icon} listing={this.props.groupList} onClick={this.updateGroup} selected={this.state.selected} title={this.state.groupName} disabled={false}/>
-            <br/><Button href={'index.php?module=hms&action=AssignmentGroupList'} onClick={this.submit} disabled={disabled} className={buttonClassName}>Submit</Button>
+            <br/><Button onClick={this.submit} disabled={disabled} className={buttonClassName}>Submit</Button>
             </div>
         );
     }

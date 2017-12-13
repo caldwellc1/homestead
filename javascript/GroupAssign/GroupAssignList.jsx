@@ -1,15 +1,21 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import {Button} from 'react-bootstrap';
 
 
 class GroupAssignList extends React.Component{
     constructor(props, context) {
         super(props, context);
+
+        this.saveAssignments = this.saveAssignments.bind(this)
+    }
+    saveAssignments(){
+
     }
     render() {
         return (
             <div>
-                HI
+                <Button onClick={this.saveAssignments}>Submit </Button>
             </div>
         );
     }
